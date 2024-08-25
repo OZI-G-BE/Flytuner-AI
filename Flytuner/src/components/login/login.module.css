@@ -1,0 +1,61 @@
+body{
+    padding: 0px;
+    margin: 0px;
+    font-family:'Poppins';
+    
+}
+.PageBody{
+    display: flex;
+    justify-content: center;
+    margin:0px;
+    padding: 0px;
+}
+.Main{
+justify-content: center;
+align-items: center;
+display: flex;
+flex-direction: column;
+flex: 1;
+}
+ 
+.login_line p{
+
+    position: relative;
+    text-align: center;
+   bottom: 37px;
+}
+
+.Main h1{
+text-align: center;
+}
+
+.Main p{
+    text-align: center;
+    }
+
+
+   
+
+    .loginPair{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        text-align:center;
+        gap: 20px;
+  
+        width: 500px;
+    }
+
+   
+        .Main{
+            
+            justify-content: center;
+         
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            }
+             
+     
+    

@@ -1,0 +1,27 @@
+.field{
+    background-color: hsla(248, 100%, 97%, 0.8);
+    border-radius: 10px;
+    padding-left: 4%;
+    padding-top: 2.5%;
+    padding-bottom: 2.5%;
+    width: 100%;
+    border: hsl(248, 63%, 67%) solid;
+    border-radius: 16px;
+    
+}
+.field img{
+    margin-left: auto;
+ 
+}
+
+.field input{
+background-color:hsla(248, 100%, 97%, 0.8);
+border: none;
+width: 90%;
+margin-left: 10px;
+bottom: auto;
+outline: none;
+}
+
+.field input:placeholder-shown{
+    display: inline;}

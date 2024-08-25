@@ -1,0 +1,57 @@
+h1{
+    text-align: center;
+}
+.summaryArea{
+    border: solid;
+    position: relative;
+    border-radius: 16px;
+    width: 1000px;
+    height: 500px;
+    top: 10px;
+    margin: auto auto;
+    margin-bottom: 20px;
+}
+
+.uploadArea{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55%;
+    height: 250px;
+    margin: auto;
+    
+}
+
+
+.uploadArea input{
+    display: none;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: dotted blue;
+    border-radius: 18px;
+    
+}
+
+.uploadArea input button{
+    width: 2000px;
+}
+
+.uploadArea .dropArea{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: solid;
+    border: dotted blue;
+    border-radius: 18px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.uploadArea.dropArea.active{
+    background-color: #ce2b2b;
+}
