@@ -1,22 +1,16 @@
-
 import Button_P from "../button_purple";
+import Styles from "./errorPage.module.css";
+import { Link } from "react-router-dom"
 
-
-import Styles from "./errorPage.module.css"
-
-
-import Line from "../../assets/line.svg"
-
-
-export default  function Login(){
+export default  function ErrorPage(){
 
     return(
 <>
     <div className={Styles.PageBody}>
         <div className={Styles.Main}>
 
-            <h1>LOGIN</h1>
-            <p>Login to get started with Flytuner &copy;</p>
+            <h1>PAGE NOT FOUND</h1>
+            <p>YOU SEEM TO BE LOST, HIT THE BUTTON TO RETURN HOME</p>
          
 
             <Link to='/'>
@@ -24,10 +18,7 @@ export default  function Login(){
             <Button_P> <p>Return to Home</p> </Button_P>
       </Link>
             
-            <div className={Styles.login_line}>
-              <img src={Line} alt="line" /> <p><b>Login</b> With Others</p>
-           
-            </div>
+          
        </div>
         
        

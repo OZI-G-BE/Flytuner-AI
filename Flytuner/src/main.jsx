@@ -5,14 +5,17 @@ import App from './App.jsx'
 import './index.css'
 import PdfSummary from './components/pdfSummary/pdfSummary.jsx'
 import Login from './components/login/login.jsx'
+import ErrorPage from './components/errorPage/errorPage.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
-    element:   <Login />
+    element:   <Login />,
+    errorElement: <ErrorPage/>
   },
   {
     path: '/upload',
-    element: <PdfSummary/>
+    element: <PdfSummary/>,
+    errorElement: <ErrorPage/>
   }
 ]);
 createRoot(document.getElementById('root')).render(

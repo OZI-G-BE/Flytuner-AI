@@ -1,0 +1,22 @@
+.Main{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    }  
+    body{
+        padding: 0px;
+        margin: 0px;
+        font-family:'Poppins';
+        
+    }
+
+    .Main h1{
+        text-align: center;
+        }
+        
+        .Main p{
+            text-align: center;
+            }
+        
