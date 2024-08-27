@@ -45,7 +45,7 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
         const dataBuffer = fs.readFileSync(filepath); // get the file buffer
         const data = await pdfParse(dataBuffer);
         res.send(data);
-        console.log("PDF Content:", data.text); // log the parsed content
+       
        } catch (error) {
         res.status(500).json({ message: "An error occurred", error: error.message });
     }

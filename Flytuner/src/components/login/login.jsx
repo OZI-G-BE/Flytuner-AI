@@ -1,7 +1,7 @@
 import IdInfoField from "../idInfoField";
 import Button_P from "../button_purple";
 import SignUpWith from "../signUpWith";
-
+import { Link } from 'react-router-dom'
 import Styles from "./login.module.css"
 
 import user from "../../assets/userIcon.svg"
@@ -26,14 +26,22 @@ export default  function Login(){
                 <IdInfoField type="password" icon={pass} placeholder="Password"/>
             </div>
 
-            <Button_P> <p>Login Now</p> </Button_P>
+
+            <Link to='/upload'> <Button_P> <p>Login Now</p> </Button_P> </Link>
+
             
             <div className={Styles.login_line}>
               <img src={Line} alt="line" /> <p><b>Login</b> With Others</p>
             </div> 
+             
+             
+
+      
                 <SignUpWith service="Google" icon={googIco} />
-            
+
+      
                 <SignUpWith service="Facebook" icon={FaceIco} />
+  
             <div>
 
             </div>
