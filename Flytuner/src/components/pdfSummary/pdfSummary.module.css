@@ -10,6 +10,7 @@ h1{
     top: 10px;
     margin: auto auto;
     margin-bottom: 20px;
+    overflow: scroll;
 }
 
 .uploadArea{
