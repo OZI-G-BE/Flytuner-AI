@@ -7,10 +7,12 @@ export default function PdfSummary(){
 
 
     const [fileName, setFileName] = useState("No File Chosen");
-    const contents = useRef("sdfsd");
     const [dragActive, setDragActive] = useState(false);
+    const contents = useRef("sdfsd");
+    const [dataReceived, setDatareceived] = useState();
 
-    useEffect(()=>{uploadPdf(contents.current)},[contents.current])
+
+
 
     function handleFileChange (event){
         const file = event.target.files[0];
@@ -18,6 +20,7 @@ export default function PdfSummary(){
             setFileName(file.name);
             contents.current=file;
           uploadPdf(file);
+
         }
     };
 
@@ -26,7 +29,8 @@ export default function PdfSummary(){
         const formData = new FormData();
         formData.append('uploadFile', files)
      try{   const file = await axios.post('http://localhost:8000/api/data', formData)
-
+          await  setDatareceived(file.data.text);
+            console.log(dataReceived);
 
     } catch (error) {
         console.error("Error uploading PDF:", error.message);
@@ -92,8 +96,12 @@ Upload a file <br />
 </div>
 
 <div className={styles.summaryArea}>
+    <p>
 
+{dataReceived}
+    </p>
 </div>
+<button>display</button>
 </>
     );
 }
