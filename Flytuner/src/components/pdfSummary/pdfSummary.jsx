@@ -4,77 +4,82 @@ import styles from "./pdfSummary.module.css";
 
 
 export default function PdfSummary(){
-
-
+    
+    
     const [fileName, setFileName] = useState("No File Chosen");
     const [dragActive, setDragActive] = useState(false);
     const contents = useRef("sdfsd");
     const [dataReceived, setDatareceived] = useState();
-
-
-
-
+    
+    
+    
+    
     function handleFileChange (event){
         const file = event.target.files[0];
         if (file) {
             setFileName(file.name);
             contents.current=file;
-          uploadPdf(file);
-
+            uploadPdf(file);
+            
         }
     };
-
-
-    async function uploadPdf(files){
+    
+    
+    async function uploadPdf(file){
         const formData = new FormData();
-        formData.append('uploadFile', files)
-     try{   const file = await axios.post('http://localhost:8000/api/data', formData)
-          await  setDatareceived(file.data.text);
-            console.log(dataReceived);
-
+        formData.append('uploadFile', file)
+        console.log(file);
+        try{   const response = await axios.post('http://localhost:8000/api/data', formData)
+           if (file.type=="application/pdf") {
+            
+               setDatareceived(response.data.text);
+           }else{
+            setDatareceived(response.data);
+           }
+      
     } catch (error) {
         console.error("Error uploading PDF:", error.message);
     }
- 
-    }
+    
+}
 
-    function handleDEenter(e) {
+function handleDEenter(e) {
+    
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+}
+
+function handleDLeave(e) {
+    
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+}
+
+function handleDOver(e) {
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+}
+
+function handleDrop(e) {
        
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(true);
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+        setFileName(file.name);
+        contents.current=file;
+        uploadPdf(file);
     }
+}
 
-    function handleDLeave(e) {
-       
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-    }
-
-    function handleDOver(e) {
-       
-        e.preventDefault();
-        e.stopPropagation();
-        
-    }
-
-    function handleDrop(e) {
-       
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-
-        const file = e.dataTransfer.files[0];
-        if (file) {
-          setFileName(file.name);
-            contents.current=file;
-          uploadPdf(file);
-        }
-    }
-
-    return(
-        <>
+return(
+    <>
 <h1>
     pdf summary
 </h1>
@@ -96,10 +101,10 @@ Upload a file <br />
 </div>
 
 <div className={styles.summaryArea}>
-    <p>
+    <pre>
 
 {dataReceived}
-    </p>
+    </pre>
 </div>
 <button>display</button>
 </>

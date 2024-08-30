@@ -42,9 +42,15 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
 
         // Parse the uploaded PDF file
         filepath = path.join(__dirname, "Files", req.file.filename)
-        const dataBuffer = fs.readFileSync(filepath); // get the file buffer
-        const data = await pdfParse(dataBuffer);
-        res.send(data);
+        if (req.file.mimetype =="application/pdf") {
+           const dataBuffer = fs.readFileSync(filepath); // get the file buffer
+            const data = await pdfParse(dataBuffer);
+            res.send(data);     
+        }else{
+            const dataBuffer = fs.readFileSync(filepath, "utf-8");
+            res.send(dataBuffer);
+            console.log(dataBuffer)
+        }
        
        } catch (error) {
         res.status(500).json({ message: "An error occurred", error: error.message });
