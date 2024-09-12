@@ -45,7 +45,8 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
         if (req.file.mimetype =="application/pdf") {
            const dataBuffer = fs.readFileSync(filepath); // get the file buffer
             const data = await pdfParse(dataBuffer);
-            res.send(data);     
+            res.send(data.text);    
+            console.log(data); 
         }else{
             const dataBuffer = fs.readFileSync(filepath, "utf-8");
             res.send(dataBuffer);

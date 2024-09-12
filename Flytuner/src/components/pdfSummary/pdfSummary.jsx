@@ -30,12 +30,9 @@ export default function PdfSummary(){
         formData.append('uploadFile', file)
         console.log(file);
         try{   const response = await axios.post('http://localhost:8000/api/data', formData)
-           if (file.type=="application/pdf") {
-            
-               setDatareceived(response.data.text);
-           }else{
+           
             setDatareceived(response.data);
-           }
+           
       
     } catch (error) {
         console.error("Error uploading PDF:", error.message);
