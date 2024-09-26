@@ -28,10 +28,14 @@ export default function PdfSummary(){
     async function uploadPdf(file){
         const formData = new FormData();
         formData.append('uploadFile', file)
-        console.log(file);
+       // console.log(file);
         try{   const response = await axios.post('http://localhost:8000/api/data', formData)
-           
+            console.log(response.data);
+           if (file.type=='application/pdf') {
+               setDatareceived(response.data.text);
+           }else{
             setDatareceived(response.data);
+           }
            
       
     } catch (error) {
