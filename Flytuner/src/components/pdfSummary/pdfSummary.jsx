@@ -32,7 +32,7 @@ export default function PdfSummary(){
         try{   const response = await axios.post('http://localhost:8000/api/data', formData)
             console.log(response.data);
            if (file.type=='application/pdf') {
-               setDatareceived(response.data.text);
+               setDatareceived(response.data);
            }else{
             setDatareceived(response.data);
            }
