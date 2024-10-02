@@ -52,7 +52,7 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
            const dataBuffer = fs.readFileSync(filepath); // get the file buffer
           const data = await pdfParse(dataBuffer);
             const AIres = await Myprompter.prompter(data.text, process.env.API_KEY);
-                console.log(AIres)
+                // console.log(AIres)
             res.send(AIres);     
         }
         else if(req.file.mimetype == "image/png" || req.file.mimetype == "image/jpeg")
@@ -67,7 +67,7 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
            const  dataBuffer = fs.readFileSync(filepath, "utf-8");
 
            const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY);
-           console.log(AIres)
+        //    console.log(AIres)
             res.send(AIres);
       
         }
@@ -85,7 +85,3 @@ fs.unlinkSync(filepath, (err)=>{
 });
 
 app.listen(8000, ()=>{console.log("server running on port 8000")})
-// module.exports = {
-// data,
-// dataBuffer,
-// }

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import Button_P from "../button_purple";
 import styles from "./pdfSummary.module.css";
-
+import ReactMarkdown from 'react-markdown';
 
 export default function PdfSummary(){
     
@@ -19,7 +20,7 @@ export default function PdfSummary(){
         if (file) {
             setFileName(file.name);
             contents.current=file;
-            uploadPdf(file);
+            // uploadPdf(file);
             
         }
     };
@@ -75,7 +76,7 @@ function handleDrop(e) {
     if (file) {
         setFileName(file.name);
         contents.current=file;
-        uploadPdf(file);
+        // uploadPdf(file);
     }
 }
 
@@ -96,18 +97,22 @@ onDragEnter={handleDEenter} onDragOver={handleDOver} onDragLeave={handleDLeave} 
 
 
 Upload a file <br />
-<span id="file-name">{fileName}</span>
+<span id="file-name"><p>{fileName}</p></span>
 
 </label>
 </div>
 
 <div className={styles.summaryArea}>
-    <pre>
+    <ReactMarkdown>
 
 {dataReceived}
-    </pre>
+    </ReactMarkdown>
+</div >
+<div className={styles.submit} onClick={()=>uploadPdf(contents.current)}>
+
+<Button_P > submit</Button_P>
 </div>
-<button>display</button>
+
 </>
     );
 }
