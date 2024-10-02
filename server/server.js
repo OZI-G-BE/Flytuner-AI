@@ -72,7 +72,7 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
       
         }
        
-fs.unlink(filepath, (err)=>{
+fs.unlinkSync(filepath, (err)=>{
     if (err){
         return console.log(err);
     }
