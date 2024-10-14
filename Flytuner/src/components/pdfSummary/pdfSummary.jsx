@@ -4,13 +4,16 @@ import Button_P from "../button_purple";
 import styles from "./pdfSummary.module.css";
 import ReactMarkdown from 'react-markdown';
 
+import docImg from '../../assets/doc.png';
+
 export default function PdfSummary(){
     
     
-    const [fileName, setFileName] = useState("No File Chosen");
+    const [fileName, setFileName] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
-    const contents = useRef("sdfsd");
+    const contents = useRef();
     const [dataReceived, setDatareceived] = useState();
+    const [isFile, setIsFile] = useState(false);
     
     
     
@@ -20,12 +23,39 @@ export default function PdfSummary(){
         if (file) {
             setFileName(file.name);
             contents.current=file;
+            setIsFile(true);
             // uploadPdf(file);
             
         }
     };
     
+    function handleDrop(e) {
+           
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            setFileName(file.name);
+            contents.current=file;
+            setIsFile(true);
+            // uploadPdf(file);
+        }
+    }
     
+    function handleFileRemove (){
+        const file = null;
+        if (!file) {
+            setFileName("Upload a File");
+            contents.current=file;
+            setIsFile(false);
+            // uploadPdf(file);
+            
+        }
+    };
+
+
     async function uploadPdf(file){
         const formData = new FormData();
         formData.append('uploadFile', file)
@@ -63,44 +93,40 @@ function handleDOver(e) {
     
     e.preventDefault();
     e.stopPropagation();
+    setDragActive(true);
     
 }
 
-function handleDrop(e) {
-       
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    const file = e.dataTransfer.files[0];
-    if (file) {
-        setFileName(file.name);
-        contents.current=file;
-        // uploadPdf(file);
-    }
-}
 
 return(
     <>
 <h1>
-    pdf summary
+   Flytuner AI Summeriser
 </h1>
-<div className={styles.uploadArea}>
-
+<div className={`${styles.uploadArea} ${dragActive ? styles.active: ''}  ${isFile ? styles.shrinkDelay : ''} `}>
 
 <input type="file" id="upBtn"  onChange={handleFileChange} />
 
 
 <label htmlFor="upBtn" 
-className={`${styles.dropArea} ${dragActive ? styles.active : ''}`}
+className={`${styles.dropArea} ${isFile ? styles.shrink : ''}`}
 onDragEnter={handleDEenter} onDragOver={handleDOver} onDragLeave={handleDLeave} onDrop={handleDrop}> 
 
+<img src={docImg} alt="yp" className={`${styles.docImg} ${dragActive ? styles.docActive: ''}`} />
 
-Upload a file <br />
-<span id="file-name"><p>{fileName}</p></span>
+
+{/* Upload a file */}
+<span id="file-name" ><p className={styles.fileNamer}>{fileName}</p></span>
 
 </label>
 </div>
+<div className={`${isFile ? '' : styles.docImg}`} >
+    <Button_P > submit</Button_P>
+    <div className={`${styles.clearContainer}`}>
+    <button className={styles.clear} onClick={handleFileRemove}>clear</button>
+    </div>
+    </div>
+
 
 <div className={styles.summaryArea}>
     <ReactMarkdown>
@@ -110,7 +136,6 @@ Upload a file <br />
 </div >
 <div className={styles.submit} onClick={()=>uploadPdf(contents.current)}>
 
-<Button_P > submit</Button_P>
 </div>
 
 </>

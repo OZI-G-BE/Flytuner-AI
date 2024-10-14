@@ -21,6 +21,8 @@ h1{
     width: 55%;
     height: 250px;
     margin: auto;
+    width: 50%;
+    height: 240px;
     
 }
 
@@ -35,6 +37,19 @@ h1{
     
 }
 
+.docImg{
+width:200px;
+height:200px;
+position: absolute;
+z-index: -1;
+opacity: 50%;
+display: none;
+}
+.docActive{
+    display: block;
+}
+
+
 .uploadArea input button{
     width: 2000px;
 }
@@ -47,11 +62,34 @@ h1{
     position: relative;
     width: 100%;
     height: 100%;
-    border: solid;
     border: dotted blue;
     border-radius: 18px;
     text-align: center;
-    transition: background-color 0.3s;
+    align-content: center;
+    text-align:center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    
+    overflow:hidden;
+}
+
+.active{
+    border-radius: 18px;
+    background-color: hsla(228, 65%, 49%, 0.393);
+    color: black;
+    display: block;
+    /* background-image: url('../../assets/doc.png'); */
+    /* background-repeat: no-repeat; */
+    /* background-size: 200px 200px; */
+    /* background-position: center; */
+    
+}
+
+.fileNamer{
+    padding: 20px;
+}
+
+.clearContainer{
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -59,12 +97,60 @@ h1{
     text-align:center;
     margin-bottom: 27px;
     margin-top: 20px;
-}
 
-.uploadArea.dropArea.active{
-    background-color: #ce2b2b;
 }
 
 .submit{
 display: inline;
+}
+.clear{
+   
+        color:white;
+        background-color: rgb(137, 117, 168);
+        background-image: linear-gradient(to right,rgb(162, 157, 198),rgb(56, 45, 130));;
+        border: none;
+        border-radius: 16px;
+        width: 94px;
+        height: 25px;
+    
+
+  
+    /*
+    .shadow
+        border-radius: 16px;
+        box-shadow: 0px 8px 21px hsla(0, 0%, 0%, 0.16);
+     */
+}
+
+
+
+/* Animations*/
+@keyframes shrink {
+    0%{
+        width: 100%;
+        height: 100%;
+    }
+
+    100%{
+        width: auto ;
+        height: 10%;
+    }
+}
+
+@keyframes shrinkDelay {
+    0%{
+      margin-bottom: 0px;
+    }
+
+    100%{
+     
+        margin-bottom: -100px;
+    }
+}
+
+.shrink{
+    animation: shrink 0.2s ease-out 0s 1 normal forwards;
+}
+.shrinkDelay{
+    animation: shrinkDelay 0.2s linear 0s 1 normal forwards;
 }
