@@ -7,6 +7,12 @@
     width: 124px;
     height: 52px;
 }
+
+.Purple_btn:hover{
+    color:rgb(89, 89, 89);
+    background-color: rgb(104, 89, 204);
+}
+
 .btn_container{
     display: flex;
     flex-direction: row;

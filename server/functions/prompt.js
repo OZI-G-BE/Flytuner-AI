@@ -2,11 +2,11 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 // require("dotenv").config({path: "../environment/.env"});//test
 
 
-async function prompter(prompt, apikey) {
+async function prompter(prompt, apikey, outputSize) {
     try {
         const genAI = new GoogleGenerativeAI(apikey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent("explain the text below in 500 words\n" + prompt);
+        const result = await model.generateContent(`explain the text below in ${outputSize} words\n  ${prompt}`);
         return result.response.text();
     } catch (error) {
         console.log(error);

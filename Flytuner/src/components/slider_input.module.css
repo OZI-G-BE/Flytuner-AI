@@ -1,0 +1,14 @@
+.slider_container{
+   display: flex;
+flex-direction: row;
+justify-content: center;
+align-content: center;
+text-align:center;
+margin-bottom: 27px;
+margin-top: 20px;
+}
+
+input[type="range"]{
+    width: 170px; /* Full width */
+    height: 8px; /* Track height */
+ }

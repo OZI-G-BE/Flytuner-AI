@@ -36,8 +36,24 @@ const upload = multer({storage:storage})
 app.use(express.json());
 app.use(cors(corsOptions));
 
-// let data;
-// let dataBuffer;
+
+var outputSize
+
+
+app.get("/api/data/params",async (req, res) => {
+    try {
+        if (!req.body) {
+            return res.status(400).json({ message: "No file uploaded" });        
+        }
+        outputSize = req.query.size;
+        res.send(outputSize)
+    
+    }
+    catch(error){
+
+    }
+    })
+    
 
 app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
     try {
@@ -51,14 +67,14 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
         if (req.file.mimetype =="application/pdf") {
            const dataBuffer = fs.readFileSync(filepath); // get the file buffer
           const data = await pdfParse(dataBuffer);
-            const AIres = await Myprompter.prompter(data.text, process.env.API_KEY);
+            const AIres = await Myprompter.prompter(data.text, process.env.API_KEY,outputSize);
                 // console.log(AIres)
             res.send(AIres);     
         }
         else if(req.file.mimetype == "image/png" || req.file.mimetype == "image/jpeg")
                     {
                    const  data =  await T.recognize(filepath,'eng')
-                   const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY);
+                   const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY,outputSize);
 
                     res.send(AIres);
                     }
@@ -66,7 +82,7 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
         else{
            const  dataBuffer = fs.readFileSync(filepath, "utf-8");
 
-           const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY);
+           const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY,outputSize);
         //    console.log(AIres)
             res.send(AIres);
       
@@ -83,5 +99,7 @@ fs.unlinkSync(filepath, (err)=>{
         res.status(500).json({ message: "An error occurred", error: error.message });
     }
 });
+
+
 
 app.listen(8000, ()=>{console.log("server running on port 8000")})

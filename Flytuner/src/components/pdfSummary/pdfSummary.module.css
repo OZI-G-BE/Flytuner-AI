@@ -78,49 +78,40 @@ display: none;
     background-color: hsla(228, 65%, 49%, 0.393);
     color: black;
     display: block;
-    /* background-image: url('../../assets/doc.png'); */
-    /* background-repeat: no-repeat; */
-    /* background-size: 200px 200px; */
-    /* background-position: center; */
-    
 }
 
 .fileNamer{
     padding: 20px;
 }
 
-.clearContainer{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-content: center;
-    text-align:center;
-    margin-bottom: 27px;
-    margin-top: 20px;
 
-}
+
+
+.slider_container{
+    display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-content: center;
+ text-align:center;
+ margin-bottom: 27px;
+ margin-top: 20px;
+ }
+ 
+ input[type="range"]{
+     width: 170px; /* Full width */
+     height: 8px; /* Track height */
+     justify-content: center;
+     align-content: center;
+     text-align:center;
+     margin-left: auto;
+     margin-right: auto;
+  }
+
 
 .submit{
 display: inline;
 }
-.clear{
-   
-        color:white;
-        background-color: rgb(137, 117, 168);
-        background-image: linear-gradient(to right,rgb(162, 157, 198),rgb(56, 45, 130));;
-        border: none;
-        border-radius: 16px;
-        width: 94px;
-        height: 25px;
-    
 
-  
-    /*
-    .shadow
-        border-radius: 16px;
-        box-shadow: 0px 8px 21px hsla(0, 0%, 0%, 0.16);
-     */
-}
 
 
 
