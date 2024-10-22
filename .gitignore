@@ -1,2 +1,4 @@
 server/environment
 server/node_modules
+server/Files
+server/pdfOutput.pdf

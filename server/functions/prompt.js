@@ -1,12 +1,14 @@
+// import OpenAI from "openai";
+const {OpenAI} = require("openai")//
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-// require("dotenv").config({path: "../environment/.env"});//test
+require("dotenv").config({path: "../environment/.env"});
 
-
-async function prompter(prompt, apikey, outputSize) {
+//GOOGLE GEMENI//
+async function prompter(prompt, apikey, outputSize, paragraphs, pages) {
     try {
         const genAI = new GoogleGenerativeAI(apikey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(`explain the text below in ${outputSize} words\n  ${prompt}`);
+        const result = await model.generateContent(`explain the text below in ${outputSize} words and separate it in ${paragraphs} paragraphs and ${pages} pages if and only if necessary to do so depending on the word count\n  ${prompt}`);
         return result.response.text();
     } catch (error) {
         console.log(error);
@@ -15,6 +17,29 @@ async function prompter(prompt, apikey, outputSize) {
     }
 
 }
+
+
+
+
+//OPEN AI//
+async function OpenAiPrompter() {
+    
+    const openai = new OpenAI({
+        organization: process.env.OPENAI_ORG_ID,
+        project: process.env.OPENAI_PROJ_ID,
+    });
+    
+    
+    
+    const client = openai;
+    
+    const response = await client.chat.completions.create({
+        messages: [{ role: 'user', content: 'Say this is a test' }],
+        model: 'gpt-4o-mini'
+    });
+console.log(response._request_id)
+}    
+
 ///TEST AREA////
 
 async function testPrompt(){
@@ -32,6 +57,7 @@ async function testPrompt(){
 
 }    
 // testPrompt();
+//OpenAiPrompter();
 module.exports = {
 
     prompter,

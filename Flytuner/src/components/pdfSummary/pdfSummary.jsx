@@ -5,6 +5,10 @@ import Button_Small from "../button_small";
 import ReactMarkdown from 'react-markdown';
 // import Slider_Input from "../slider_input";
 
+
+{/* <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by Bharat Icons - Flaticon</a> */}
+
+
 import styles from "./pdfSummary.module.css";
 
 import docImg from '../../assets/doc.png';
@@ -14,16 +18,36 @@ export default function PdfSummary(){
     
     const [fileName, setFileName] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
-    const contents = useRef();
     const [dataReceived, setDatareceived] = useState();
     const [isFile, setIsFile] = useState(false);
+    
     const [outputSize,setOutputSize] = useState("50");
+    const [paragraphs,setParagraphs] = useState(1);
+    const [pages,setPages] = useState(1);
+    const contents = useRef();
+    const pdfDownload = useRef();
     
     
     const handleOutputSize = (event) => {
         setOutputSize(event.target.value); // Update state with new value
       };
+      const handleParagraphs = (event) => {
+        setParagraphs(event.target.value); // Update state with new value
+      };
+      const handlePages = (event) => {
+        setPages(event.target.value); // Update state with new value
+      };
     
+   function handlePdfDownload (){
+        const pdfUrl = pdfDownload.current;
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);}
+
+
 function handleFileChange (event){
         const file = event.target.files[0];
         if (file) {
@@ -56,6 +80,7 @@ function handleFileRemove (){
             setFileName("Upload a File");
             contents.current=file;
             setIsFile(false);
+            setDatareceived(false)
             // uploadPdf(file);
             
         }
@@ -70,15 +95,18 @@ async function uploadPdf(file){
             
            const resSize = await axios.get('http://localhost:8000/api/data/params',
             {params: {
-                size: outputSize
+                size: outputSize,
+                paragraphs: paragraphs,
+                pages: pages
            }} ) //add a UI for output size in the htmml 
            console.log(outputSize)
              const response = await axios.post('http://localhost:8000/api/data', formData)
             console.log(response.data);
+            pdfDownload.current = response.data.pdfDownload
            if (file.type=='application/pdf') {
-               setDatareceived(response.data);
+               setDatareceived(response.data.AIres);
            }else{
-            setDatareceived(response.data);
+            setDatareceived(response.data.AIres);
            }
            
       
@@ -141,10 +169,27 @@ return(
 <input type="range" 
  className={styles.slider}
  value= {outputSize}
- onChange={handleOutputSize} />
- <p>word Range: {outputSize}</p>
-        </div>
+ max={3000}
+ onChange={handleOutputSize} />word Range: {outputSize}
 
+<input type="number"
+        min={1}
+        onChange={handleOutputSize}
+        placeholder="Word Range"
+        />
+ <input type="number"
+        min={1}
+        onChange={handleParagraphs}
+        placeholder="Paragraphs"
+        />        
+<input type="number"
+        min={1}
+        onChange={handlePages}
+        placeholder="Pages"
+        />
+
+        </div>
+       
 
     <div className={styles.submit} onClick={()=>uploadPdf(contents.current)}>
         <Button_P > submit</Button_P>
@@ -153,10 +198,17 @@ return(
        <Button_Small>clear</Button_Small>
     </div>
 
+    {/* <div onClick={handlePdfDownload}> 
+    </div> */}
+    <a href={pdfDownload.current} download>
+
+       <Button_Small>Download</Button_Small>
+    </a>
+
 </div>
 
 
-<div className={styles.summaryArea}>
+<div className={`${dataReceived ? styles.summaryArea : ''}`}>
     <ReactMarkdown>
         {dataReceived}
     </ReactMarkdown>

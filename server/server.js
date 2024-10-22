@@ -1,13 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const app = express();
 const path = require("path");
-const pdfParse = require("pdf-parse");
 const fs = require("fs");
+const pdfParse = require("pdf-parse");
 const Myprompter = require("./functions/prompt.js")
+const pdfGen = require("./functions/pdfGenerator.js")
 const T = require("tesseract.js");
 
+const app = express();
 
 require("dotenv").config({path: "./environment/.env"});
 
@@ -32,13 +33,13 @@ const storage = multer.diskStorage({
 
 
 const upload = multer({storage:storage})
-
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(express.static('public'));
 
-
-var outputSize
-
+let outputSize
+let paragraphs
+let pages
 
 app.get("/api/data/params",async (req, res) => {
     try {
@@ -46,7 +47,9 @@ app.get("/api/data/params",async (req, res) => {
             return res.status(400).json({ message: "No file uploaded" });        
         }
         outputSize = req.query.size;
-        res.send(outputSize)
+        paragraphs = req.query.paragraphs;
+        pages = req.query.pages
+        res.send("recieved data")
     
     }
     catch(error){
@@ -66,34 +69,58 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
         filepath = path.join(__dirname, "Files", req.file.filename)
         if (req.file.mimetype =="application/pdf") {
            const dataBuffer = fs.readFileSync(filepath); // get the file buffer
-          const data = await pdfParse(dataBuffer);
-            const AIres = await Myprompter.prompter(data.text, process.env.API_KEY,outputSize);
+            
+           fs.unlinkSync(filepath, (err)=>{
+            if (err){
+                return console.log(err);
+            }
+         
+        })
+          
+           const data = await pdfParse(dataBuffer);
+            const AIres = await Myprompter.prompter(data.text, process.env.API_KEY,outputSize,paragraphs,pages);
                 // console.log(AIres)
-            res.send(AIres);     
+              const pdfDownload = pdfGen.generatePdf(AIres,"pdfOutput.pdf")
+              
+            res.send({AIres,pdfDownload});     
         }
         else if(req.file.mimetype == "image/png" || req.file.mimetype == "image/jpeg")
                     {
                    const  data =  await T.recognize(filepath,'eng')
-                   const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY,outputSize);
 
-                    res.send(AIres);
+                   fs.unlinkSync(filepath, (err)=>{
+                    if (err){
+                        return console.log(err);
+                    }
+                 
+                })
+
+
+                   const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY,outputSize,paragraphs,pages);
+                   const pdfDownload = pdfGen.generatePdf(AIres,"pdfOutput.pdf")
+              
+                   res.send({AIres,pdfDownload});   
                     }
 
         else{
            const  dataBuffer = fs.readFileSync(filepath, "utf-8");
 
-           const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY,outputSize);
-        //    console.log(AIres)
-            res.send(AIres);
+           fs.unlinkSync(filepath, (err)=>{
+            if (err){
+                return console.log(err);
+            }
+         
+        })
+
+
+           const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY,outputSize,paragraphs,pages);
+           const pdfDownload = pdfGen.generatePdf(AIres,"pdfOutput.pdf")
+              
+           res.send({AIres,pdfDownload});  
       
         }
        
-fs.unlinkSync(filepath, (err)=>{
-    if (err){
-        return console.log(err);
-    }
- 
-})
+
 
        } catch (error) {
         res.status(500).json({ message: "An error occurred", error: error.message });
