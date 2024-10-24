@@ -101,8 +101,9 @@ async function uploadPdf(file){
            }} ) //add a UI for output size in the htmml 
            console.log(outputSize)
              const response = await axios.post('http://localhost:8000/api/data', formData)
-            console.log(response.data);
-            pdfDownload.current = response.data.pdfDownload
+             console.log(response.data);
+             pdfDownload.current = response.data.pdfDownload
+             console.log(pdfDownload.current);
            if (file.type=='application/pdf') {
                setDatareceived(response.data.AIres);
            }else{
@@ -200,9 +201,9 @@ return(
 
     {/* <div onClick={handlePdfDownload}> 
     </div> */}
-    <a href={pdfDownload.current} download>
+    <a href="http://localhost:8000/api/data/download" download>
 
-       <Button_Small>Download</Button_Small>
+       <Button_Small>Download pdf</Button_Small>
     </a>
 
 </div>

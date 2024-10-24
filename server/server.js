@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const Myprompter = require("./functions/prompt.js")
-const pdfGen = require("./functions/pdfGenerator.js")
+const pdfGen = require("./functions/fileGenerator.js")
 const T = require("tesseract.js");
 
 const app = express();
@@ -37,9 +37,17 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.static('public'));
 
-let outputSize
-let paragraphs
-let pages
+let outputSize;
+let paragraphs;
+let pages;
+
+let pdfDownload;
+let pdfPath = 'public/outputPDF.pdf';
+
+app.get('/api/data/download', (req, res) => {
+   
+    res.download(pdfDownload); // Prompts a download in the frontend
+});
 
 app.get("/api/data/params",async (req, res) => {
     try {
@@ -69,7 +77,7 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
         filepath = path.join(__dirname, "Files", req.file.filename)
         if (req.file.mimetype =="application/pdf") {
            const dataBuffer = fs.readFileSync(filepath); // get the file buffer
-            
+           
            fs.unlinkSync(filepath, (err)=>{
             if (err){
                 return console.log(err);
@@ -80,9 +88,10 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
            const data = await pdfParse(dataBuffer);
             const AIres = await Myprompter.prompter(data.text, process.env.API_KEY,outputSize,paragraphs,pages);
                 // console.log(AIres)
-              const pdfDownload = pdfGen.generatePdf(AIres,"pdfOutput.pdf")
+              pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
+           
               
-            res.send({AIres,pdfDownload});     
+            res.send({AIres});     
         }
         else if(req.file.mimetype == "image/png" || req.file.mimetype == "image/jpeg")
                     {
@@ -97,9 +106,9 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
 
 
                    const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY,outputSize,paragraphs,pages);
-                   const pdfDownload = pdfGen.generatePdf(AIres,"pdfOutput.pdf")
+                   pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
               
-                   res.send({AIres,pdfDownload});   
+                   res.send({AIres});   
                     }
 
         else{
@@ -114,9 +123,9 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
 
 
            const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY,outputSize,paragraphs,pages);
-           const pdfDownload = pdfGen.generatePdf(AIres,"pdfOutput.pdf")
-              
-           res.send({AIres,pdfDownload});  
+           
+           pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
+           res.send({AIres});  
       
         }
        

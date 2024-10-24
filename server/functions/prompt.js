@@ -8,7 +8,10 @@ async function prompter(prompt, apikey, outputSize, paragraphs, pages) {
     try {
         const genAI = new GoogleGenerativeAI(apikey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(`explain the text below in ${outputSize} words and separate it in ${paragraphs} paragraphs and ${pages} pages if and only if necessary to do so depending on the word count\n  ${prompt}`);
+        const result = await model.generateContent(`explain the text below in ${outputSize} words and separate it in ${paragraphs} paragraph title sections
+             and ${pages} pages if and only if necessary to do so depending on the word count
+              and also add a "\n" after every 80th character
+             \n  ${prompt}`);
         return result.response.text();
     } catch (error) {
         console.log(error);
