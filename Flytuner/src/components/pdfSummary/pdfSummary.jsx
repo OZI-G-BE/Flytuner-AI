@@ -25,8 +25,12 @@ export default function PdfSummary(){
     const [paragraphs,setParagraphs] = useState(1);
     const [pages,setPages] = useState(1);
     const contents = useRef();
-    const pdfDownload = useRef();
+
+    // const audioFile = useRef()
+    // const audioLength = useRef()
     
+// useEffect([audioLength.current],()=>{playAudio})
+
     
     const handleOutputSize = (event) => {
         setOutputSize(event.target.value); // Update state with new value
@@ -38,14 +42,6 @@ export default function PdfSummary(){
         setPages(event.target.value); // Update state with new value
       };
     
-   function handlePdfDownload (){
-        const pdfUrl = pdfDownload.current;
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);}
 
 
 function handleFileChange (event){
@@ -93,7 +89,7 @@ async function uploadPdf(file){
        // console.log(file);
         try{ 
             
-           const resSize = await axios.get('http://localhost:8000/api/data/params',
+          await axios.get('http://localhost:8000/api/data/params',
             {params: {
                 size: outputSize,
                 paragraphs: paragraphs,
@@ -102,12 +98,14 @@ async function uploadPdf(file){
            console.log(outputSize)
              const response = await axios.post('http://localhost:8000/api/data', formData)
              console.log(response.data);
-             pdfDownload.current = response.data.pdfDownload
-             console.log(pdfDownload.current);
-           if (file.type=='application/pdf') {
-               setDatareceived(response.data.AIres);
-           }else{
-            setDatareceived(response.data.AIres);
+             
+             if (file.type=='application/pdf') {
+                 setDatareceived(response.data.AIres);
+                //  audioFile.current = "../../../server/"+response.data.audioDownload;
+                }else{
+                    setDatareceived(response.data.AIres);
+                    // audioFile.current = "../../../server/"+response.data.audioDownload;
+           
            }
            
       
@@ -116,6 +114,29 @@ async function uploadPdf(file){
     }
     
 };
+
+async function speakBody(){
+    
+    try{ 
+            
+        await axios.get('http://localhost:8000/api/data/download/audio/playAudio')
+        console.log("speaking")}
+    catch(error){
+
+    }
+}
+
+async function speakStopBody(){
+    
+    try{ 
+            
+        await axios.get('http://localhost:8000/api/data/download/audio/stopAudio')
+
+    console.log("STOOOOP ")}
+    catch(error){
+
+    }
+}
 
 function handleDEenter(e) {
     
@@ -189,22 +210,61 @@ return(
         placeholder="Pages"
         />
 
+    <div className={styles.submit} onClick={()=>uploadPdf(contents.current)}>
+        <Button_P >
+             submit
+             </Button_P>
+    </div>
+
+    <div className={styles.submit} onClick={handleFileRemove}> 
+       <Button_Small>
+        clear
+        </Button_Small>
+    </div>
         </div>
        
 
-    <div className={styles.submit} onClick={()=>uploadPdf(contents.current)}>
-        <Button_P > submit</Button_P>
-    </div>
-    <div onClick={handleFileRemove}> 
-       <Button_Small>clear</Button_Small>
-    </div>
 
-    {/* <div onClick={handlePdfDownload}> 
-    </div> */}
-    <a href="http://localhost:8000/api/data/download" download>
 
-       <Button_Small>Download pdf</Button_Small>
+
+   <div className={ `${dataReceived ? styles.btncontainer : styles.Inactive}`  }>
+
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/pdf" download >
+       <Button_Small>
+        Download pdf
+        </Button_Small>
     </a>
+
+
+
+
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} 
+    href="http://localhost:8000/api/data/download/audio" download >
+       <Button_Small>
+        Download audio
+        </Button_Small>
+    </a>
+
+
+
+   <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} 
+   onClick={speakBody}>
+       <Button_Small>
+        Play Audio
+        </Button_Small>
+   </a>
+ 
+
+   <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} 
+   onClick={speakStopBody}>
+       <Button_Small>
+        Stop Audio
+        </Button_Small>
+   </a>
+ 
+   </div>
+ 
+   
 
 </div>
 
@@ -214,7 +274,7 @@ return(
         {dataReceived}
     </ReactMarkdown>
 </div >
-
+             
 </>
     );
 }

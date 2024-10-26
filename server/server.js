@@ -6,8 +6,8 @@ const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const Myprompter = require("./functions/prompt.js")
 const pdfGen = require("./functions/fileGenerator.js")
+const audioGen = require("./functions/audioGenerator.js")
 const T = require("tesseract.js");
-
 const app = express();
 
 require("dotenv").config({path: "./environment/.env"});
@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
     destination:(req,file,cb)=>{
         cb(null,"Files");
     },
-
+    
     filename:(req,file,cb)=>{
         // console.log(file);
         cb(null, Date.now() + path.extname(file.originalname));
@@ -42,13 +42,40 @@ let paragraphs;
 let pages;
 
 let pdfDownload;
-let pdfPath = 'public/outputPDF.pdf';
+let audioDownload;
 
-app.get('/api/data/download', (req, res) => {
+let globAIres;
+let pdfPath = 'public/outputPDF.pdf';
+let audioPath = 'public/outputAudio.wav'
+
+
+// DOWNLAODS//
+
+app.get('/api/data/download/pdf', (req, res) => {
    
     res.download(pdfDownload); // Prompts a download in the frontend
 });
 
+app.get('/api/data/download/audio', (req, res) => {
+   
+    res.download(audioDownload); // Prompts a download in the frontend
+});
+
+app.get('/api/data/download/audio/playAudio', (req, res) => {
+   
+    audioGen.playAudio(globAIres);
+   
+   
+    res.send("playing sound");
+});
+
+app.get('/api/data/download/audio/stopAudio', (req, res) => {
+   
+    audioGen.stopAudio();
+    res.send("stopping sound");
+});
+
+// SET PARAMETERS//
 app.get("/api/data/params",async (req, res) => {
     try {
         if (!req.body) {
@@ -66,13 +93,14 @@ app.get("/api/data/params",async (req, res) => {
     })
     
 
+
+
+    //RECIEVE FRONTEND DATA//
 app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ message: "No file uploaded" });
-            
+            return res.status(400).json({ message: "No file uploaded" });      
         }
-
         // Parse the uploaded PDF file
         filepath = path.join(__dirname, "Files", req.file.filename)
         if (req.file.mimetype =="application/pdf") {
@@ -85,13 +113,14 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
          
         })
           
-           const data = await pdfParse(dataBuffer);
-            const AIres = await Myprompter.prompter(data.text, process.env.API_KEY,outputSize,paragraphs,pages);
+        const data = await pdfParse(dataBuffer);
+        const AIres = await Myprompter.prompter(data.text, process.env.API_KEY,outputSize,paragraphs,pages);
                 // console.log(AIres)
-              pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
-           
+                globAIres = AIres;
+        pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
+        audioDownload = audioGen.downloadAudio(AIres,audioPath);    
               
-            res.send({AIres});     
+            res.send({AIres,audioDownload});     
         }
         else if(req.file.mimetype == "image/png" || req.file.mimetype == "image/jpeg")
                     {
@@ -105,10 +134,11 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
                 })
 
 
-                   const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY,outputSize,paragraphs,pages);
-                   pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
-              
-                   res.send({AIres});   
+                const AIres = await Myprompter.prompter(data.data.text, process.env.API_KEY,outputSize,paragraphs,pages);
+                globAIres = AIres;
+                pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
+                audioDownload = audioGen.downloadAudio(AIres,audioPath); 
+                   res.send({AIres,audioDownload});   
                     }
 
         else{
@@ -123,9 +153,10 @@ app.post("/api/data", upload.single('uploadFile'),async (req, res) => {
 
 
            const AIres = await Myprompter.prompter(dataBuffer, process.env.API_KEY,outputSize,paragraphs,pages);
-           
+           globAIres = AIres;
            pdfDownload = await pdfGen.generatePdf(AIres,pdfPath);
-           res.send({AIres});  
+           audioDownload = audioGen.downloadAudio(AIres,audioPath); 
+           res.send({AIres,audioDownload});  
       
         }
        

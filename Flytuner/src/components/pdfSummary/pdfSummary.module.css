@@ -13,7 +13,7 @@ h1{
     margin-bottom: 20px;
     overflow: auto;
 }
-.summaryAreaInactive{
+.Inactive{
     
     display: none;
 }
@@ -98,6 +98,7 @@ display: none;
  text-align:center;
  margin-bottom: 10px;
  margin-top: 20px;
+ gap: 10px;
  }
  
  input[type="range"]{
@@ -125,12 +126,43 @@ display: none;
 
 
 .submit{
+    align-self: center;
+    width: auto;
+    height: auto;
 display: inline;
+text-decoration: none;
 }
 
 
 
+.btncontainer{
+    display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-content: center;
+ text-align:center;
+ margin-bottom: 10px;
+ margin-top: 20px;
+ gap: 10px;
+ }
 
+a{
+    text-decoration: none;
+    color: aliceblue;
+}
+
+a .smallBtn:hover{
+    color:rgb(89, 89, 89);
+
+}
+.smallBtn{
+    align-self: center;
+    width: auto;
+    height: auto;
+    border-radius: 16px;
+    /* background-color: rgb(10, 85, 151); */
+
+}
 /* Animations*/
 @keyframes shrink {
     0%{
