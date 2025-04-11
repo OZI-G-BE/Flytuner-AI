@@ -26,6 +26,7 @@
     "tesseract.js": "^5.1.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.9",
     "@types/raf": "^3.4.3",
     "nodemon": "^3.1.7"
   }

@@ -1,3 +1,5 @@
 {
-    "presets": ["es2015"]
+    // Disable schema validation for this file
+    "$schema": null,
+    "presets": ["@babel/preset-env"]
 }
