@@ -1,0 +1,11 @@
+.fileImg{
+display: flex;
+background-image: url("../../assets/doc.png");
+}
+
+.fileSelectCheckBox{
+position:fixed;
+left:80%
+}
+
+/* arrange the checkbox at the topright of the image */

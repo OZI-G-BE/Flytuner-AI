@@ -12,18 +12,21 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/genai": "^0.7.0",
     "@google/generative-ai": "^0.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "md-to-pdf": "^5.2.4",
+    "mongoose": "^8.13.2",
     "multer": "^1.4.5-lts.1",
-    "openai": "^4.68.1",
+    "openai": "^4.93.0",
     "pdf-parse": "^1.1.1",
     "say": "^0.16.0",
     "tesseract.js": "^5.1.1"
   },
   "devDependencies": {
+    "@types/raf": "^3.4.3",
     "nodemon": "^3.1.7"
   }
 }

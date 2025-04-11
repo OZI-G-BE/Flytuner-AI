@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef} from "react";
 import axios from "axios";
 import Button_P from "../button_purple";
 import Button_Small from "../button_small";
@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import styles from "./pdfSummary.module.css";
 
 import docImg from '../../assets/doc.png';
+import FileSelectCheckBox from "../fileSelectCheckBox/fileSelectCheckBox";
 
 export default function PdfSummary(){
     
@@ -22,8 +23,7 @@ export default function PdfSummary(){
     const [isFile, setIsFile] = useState(false);
     
     const [outputSize,setOutputSize] = useState("50");
-    const [paragraphs,setParagraphs] = useState(1);
-    const [pages,setPages] = useState(1);
+   
     const contents = useRef();
 
     // const audioFile = useRef()
@@ -35,24 +35,39 @@ export default function PdfSummary(){
     const handleOutputSize = (event) => {
         setOutputSize(event.target.value); // Update state with new value
       };
-      const handleParagraphs = (event) => {
-        setParagraphs(event.target.value); // Update state with new value
-      };
-      const handlePages = (event) => {
-        setPages(event.target.value); // Update state with new value
-      };
-    
+ 
 
 
-function handleFileChange (event){
-        const file = event.target.files[0];
+      async function handleFileChange (event){
+    try{ 
+        const file = event.target.files;
+        console.log(file);
         if (file) {
-            setFileName(file.name);
-            contents.current=file;
-            setIsFile(true);
-            // uploadPdf(file);
+            setFileName(file[0].name);
+            // contents.current=file;
+
+                let formData = new FormData();
+         
+                for (let i = 0; i < file.length; i++) {
+                    formData.append('uploadFile', file[i]) 
+                 
+                }
+        
+
+                console.log("All files in formData:", formData.getAll('uploadFile'));   
+                   
+                   console.log(outputSize)
+        
+                   const response = await axios({method: 'post', url: 'http://localhost:8000/api/data', data: formData, headers: {'Content-Type': `multipart/form-data;`}})
+                     console.log(response.data);
+
+            setIsFile(response.data.isUploaded);
+            
             
         }
+    }catch(error){
+        console.error("Error uploading PDF:", error.message);
+    }
     };
     
 function handleDrop(e) {
@@ -61,12 +76,12 @@ function handleDrop(e) {
         e.stopPropagation();
         setDragActive(false);
         
-        const file = e.dataTransfer.files[0];
+        const file = e.dataTransfer.files;
         if (file) {
-            setFileName(file.name);
+            setFileName(file[0].name);
             contents.current=file;
             setIsFile(true);
-            // uploadPdf(file);
+            
         }
     }
     
@@ -77,66 +92,31 @@ function handleFileRemove (){
             contents.current=file;
             setIsFile(false);
             setDatareceived(false)
-            // uploadPdf(file);
+            
             
         }
     };
 
 
-async function uploadPdf(file){
-        const formData = new FormData();
-        formData.append('uploadFile', file)
-       // console.log(file);
-        try{ 
-            
-          await axios.get('http://localhost:8000/api/data/params',
-            {params: {
-                size: outputSize,
-                paragraphs: paragraphs,
-                pages: pages
-           }} ) //add a UI for output size in the htmml 
-           console.log(outputSize)
-             const response = await axios.post('http://localhost:8000/api/data', formData)
-             console.log(response.data);
-             
-             if (file.type=='application/pdf') {
-                 setDatareceived(response.data.AIres);
-                //  audioFile.current = "../../../server/"+response.data.audioDownload;
-                }else{
-                    setDatareceived(response.data.AIres);
-                    // audioFile.current = "../../../server/"+response.data.audioDownload;
+async function summeraizeFiles(){
+    // formData.append('uploadFile', file)
+    try{ 
+        let formData = new FormData();
+
+        formData.append('size', outputSize);
+        
+        console.log("All files in formData:", formData.getAll('size')); 
+        const response = await axios.get('http://localhost:8000/api/summarize',
+            {params: {size: outputSize}} )
+        console.log("done")
+        setDatareceived(response.data.summary)
+        // setDatareceived(response.data.AIres);
            
-           }
-           
-      
-    } catch (error) {
-        console.error("Error uploading PDF:", error.message);
+           } catch (error) {
+        console.error("Error summarizing file:", error.message);
     }
     
 };
-
-async function speakBody(){
-    
-    try{ 
-            
-        await axios.get('http://localhost:8000/api/data/download/audio/playAudio')
-        console.log("speaking")}
-    catch(error){
-
-    }
-}
-
-async function speakStopBody(){
-    
-    try{ 
-            
-        await axios.get('http://localhost:8000/api/data/download/audio/stopAudio')
-
-    console.log("STOOOOP ")}
-    catch(error){
-
-    }
-}
 
 function handleDEenter(e) {
     
@@ -166,24 +146,33 @@ return(
 <h1>
    Flytuner AI Summeriser
 </h1>
+
 <div className={`${styles.uploadArea} ${dragActive ? styles.active: ''}  ${isFile ? styles.shrinkDelay : ''} `}>
 
-    <input type="file" id="upBtn"  onChange={handleFileChange} />
+<input type="file" id="upBtn" multiple onChange={handleFileChange} />
 
+<label htmlFor="upBtn" 
+    className={`${styles.dropArea} ${isFile ? styles.shrink : ''}`} 
+    onDragEnter={handleDEenter} onDragOver={handleDOver} onDragLeave={handleDLeave} onDrop={handleDrop}> 
 
-    <label htmlFor="upBtn" 
-        className={`${styles.dropArea} ${isFile ? styles.shrink : ''}`} 
-        onDragEnter={handleDEenter} onDragOver={handleDOver} onDragLeave={handleDLeave} onDrop={handleDrop}> 
+    <img src={docImg} alt="yp" className={`${styles.docImg} ${dragActive ? styles.docActive: ''}`} />
 
-        <img src={docImg} alt="yp" className={`${styles.docImg} ${dragActive ? styles.docActive: ''}`} />
+    <span id="file-name" ><p className={styles.fileNamer}>{fileName
+        //add the file select here
+    }
+    <FileSelectCheckBox/>
+        </p></span>
 
-        <span id="file-name" ><p className={styles.fileNamer}>{fileName}</p></span>
-
-    </label>
+</label>
 </div>
 
+<div className={`${dataReceived ? styles.summaryArea : ''}`}>
+    <ReactMarkdown>
+        {dataReceived}
+    </ReactMarkdown>
+</div >
 <div className={`${isFile ? '' : styles.docImg}`} >
-{/* <Slider_Input/> */}
+
 
 
 <div className={styles.slider_container}>
@@ -199,20 +188,11 @@ return(
         onChange={handleOutputSize}
         placeholder="Word Range"
         />
- <input type="number"
-        min={1}
-        onChange={handleParagraphs}
-        placeholder="Paragraphs"
-        />        
-<input type="number"
-        min={1}
-        onChange={handlePages}
-        placeholder="Pages"
-        />
+ 
 
-    <div className={styles.submit} onClick={()=>uploadPdf(contents.current)}>
+    <div className={styles.submit} onClick={()=>summeraizeFiles()}>
         <Button_P >
-             submit
+             summarize
              </Button_P>
     </div>
 
@@ -238,30 +218,7 @@ return(
 
 
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} 
-    href="http://localhost:8000/api/data/download/audio" download >
-       <Button_Small>
-        Download audio
-        </Button_Small>
-    </a>
-
-
-
-   <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} 
-   onClick={speakBody}>
-       <Button_Small>
-        Play Audio
-        </Button_Small>
-   </a>
- 
-
-   <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} 
-   onClick={speakStopBody}>
-       <Button_Small>
-        Stop Audio
-        </Button_Small>
-   </a>
- 
+    
    </div>
  
    
@@ -269,12 +226,10 @@ return(
 </div>
 
 
-<div className={`${dataReceived ? styles.summaryArea : ''}`}>
-    <ReactMarkdown>
-        {dataReceived}
-    </ReactMarkdown>
-</div >
-             
+
+
+
+
 </>
     );
 }
