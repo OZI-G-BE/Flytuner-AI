@@ -35,7 +35,7 @@ app.use(cors(corsOptions));
 app.use(static_('public'));
 
 let outputSize;
-let uploadedFiles = [];
+let uploadedFiles = []; // might be overwritten by update vs / Done button fix that
 
 let pdfDownload;
 let audioDownload;
