@@ -23,7 +23,7 @@ export default function PdfSummary(){
     const [outputSize,setOutputSize] = useState("50");
     const isChecked = useRef([]);
     const [contents, setContents] = useState([]);
-    const [uploadedFileIDS,setUploadedFileIDS] = useState("");
+    const [uploadedFileIDS,setUploadedFileIDS] = useState([]);
     const editedFileIDS = useRef([]);
     const [isEdit,setIsEdit] = useState(true)
 
@@ -46,13 +46,16 @@ export default function PdfSummary(){
         const file = event.target.files;
         let tempArr = Array.from(event.target.files).map(
             (value)=>{
+               const newVal = {name: value.name, size: value.size, mimeType: value.type}
                 value.checked = true
-                    return value
+                    return newVal
             }
         )
         setContents((content) => {content = tempArr
             console.log("tempArr",tempArr)
-            console.log("content", content)
+            console.log(typeof content)
+            return content
+
         });
         
         if (file) {
@@ -212,7 +215,7 @@ return(
 
 
 <ul className={`${isEdit ? styles.noFile:styles.fileFlex}`}>  
-    {contents.map((file, index)=>
+    {uploadedFileIDS.map((file, index)=>
         
         <li key={index} className={styles.Hlist}>
        
@@ -222,17 +225,19 @@ return(
             
             if (file.checked==true) {
                 
-                editedFileIDS.current.push(file)
                 
+                
+                editedFileIDS.current = uploadedFileIDS.filter((value)=>{return value != file})
                 console.log(editedFileIDS.current)
                 console.log("pdf summary: "+isChecked.current[index])
-                setContents(c=>{c[index].checked=false})
-                
+                file.checked=false
+                console.log("file: ", file.checked)
             }else{
-                editedFileIDS.current = contents.filter((value)=>{return value != file})
-            console.log(editedFileIDS.current)
-            console.log("pdf summary: "+isChecked.current[index])
-            setContents(c=>{c[index].checked=true})
+                editedFileIDS.current.push(file)
+                console.log(editedFileIDS.current)
+                console.log("pdf summary: "+isChecked.current[index])
+                file.checked=true
+                console.log("file: ", file.checked)
         }
     }}> <FileSelectCheckBox name={file.name}  />
             </div> 

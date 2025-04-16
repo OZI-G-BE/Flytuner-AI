@@ -20,13 +20,13 @@ export default function FileSelectCheckBox({name =""}) {
        <div className={styles.fileSelectCheckBox}>
             <input
                 type="checkbox"
-                id={props.name}
+                id={name}
                 checked={isSelected}
                 onChange={()=>{}}
                 
                 />
         </div>
-            <label className={styles.labelFile} htmlFor={props.name}>{props.name}</label>
+            <label className={styles.labelFile} htmlFor={name}>{name}</label>
                 </div> 
        </>
     );

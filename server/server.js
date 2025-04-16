@@ -76,7 +76,9 @@ const dataBuffer = [];
     for (let i = 0; i < uploadedFiles.length; i++) {
     dataBuffer.push({path: uploadedFiles[i].path,
                      name: uploadedFiles[i].originalname,
-                     mimeType: uploadedFiles[i].mimetype}); // push the buffer to the array
+                     mimeType: uploadedFiles[i].mimetype,
+                     checked: true}
+                    ); // push the buffer to the array
 
     
    }
