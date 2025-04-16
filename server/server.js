@@ -153,10 +153,10 @@ app.post('/api/updateVS', async (req, res)=>{
         if (!req.body) {
             return res.status(400).json({ message: "No file uploaded" });        
         }
-        const fileIDs = req.body.selectedFiles
+        
         //    console.log("fileIDs", fileIDs)
         // console.log(globAIFiles[0])
-        
+        uploadedFiles = req.body.selectedFiles
         globAIFiles[0] = response
         res.send(globAIFiles[0])
     } catch (error) {
