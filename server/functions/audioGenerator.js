@@ -1,4 +1,4 @@
-const say = require("say");
+import say from "say";
 function playAudio(AIres){
 
         say.speak(AIres)
@@ -9,7 +9,7 @@ function stopAudio(){
     say.stop();
 }
 
-function downloadAudio(AIres, filepath){
+export function downloadAudio(AIres, filepath){
 
     say.export(AIres,"",1,filepath,function(err)
     {if (err){
@@ -20,11 +20,3 @@ return filepath;
 }
 
 
-
-module.exports = {
-
-    playAudio,
-    downloadAudio,
-    stopAudio
-
-}

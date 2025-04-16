@@ -1,9 +1,9 @@
-const { mdToPdf } = require('md-to-pdf');
+// import mdToPdf from md-to-pdf
 
 
 
 
-async function generatePdf(AIres,pdfPath)  {
+export async function generatePdf(AIres,pdfPath)  {
     try{
     await mdToPdf({content: AIres}, { dest: pdfPath },{filename: pdfPath}).catch(console.error);    
        
@@ -15,6 +15,3 @@ async function generatePdf(AIres,pdfPath)  {
     }
 }
 
-module.exports = {
-generatePdf
-}

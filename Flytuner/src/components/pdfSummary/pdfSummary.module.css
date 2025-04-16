@@ -100,6 +100,11 @@ display: none;
  margin-top: 20px;
  gap: 10px;
  }
+
+ .slider_container li{
+    display: inline-block;
+ }
+
  
  input[type="range"]{
      width: 170px; /* Full width */
@@ -161,7 +166,62 @@ a .smallBtn:hover{
     height: auto;
     border-radius: 16px;
     /* background-color: rgb(10, 85, 151); */
+}
 
+.noFile{
+pointer-events: none;
+display: flex;
+list-style: none;   /* remove bullets */
+padding: 0;
+gap: 1rem; 
+/* border: pink solid; */
+}
+.noEdit{
+display: none;
+}
+.fileList{
+    
+    position: relative;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16/2;
+    max-height: 25%;
+    min-width: 100px;
+    max-width: 50%;
+    /* border: solid black; */
+}
+.fileFlex{
+    display: flex;
+    list-style: none;   /* remove bullets */
+    gap: 1rem; 
+    /* border: yellow solid; */
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100px;
+    
+    
+}
+
+
+.Hlist{
+    display: flex;
+    position: relative;
+    list-style: none;   /* remove bullets */
+    /* gap: 1rem;  */
+    margin: 1.5%;
+    flex-direction: row;
+    /* padding: 100px; */
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    left: 100px;
+    height: 100px;
+    /* border: purple; */
+    
 }
 /* Animations*/
 @keyframes shrink {

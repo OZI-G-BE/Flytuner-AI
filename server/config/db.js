@@ -1,10 +1,13 @@
-const mongoose = require('mongoose'); 
+import mongoose from "mongoose"
  
-require("dotenv").config({path: "../environment/.env"});
+import dotenv from 'dotenv';
 
+dotenv.config({
+  path: '../environment/.env'
+});
 
  
-const connectDB = async () => { 
+export const connectDB = async () => { 
   try { 
     await mongoose.connect( 
         `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@flytunerdb.xokhg0q.mongodb.net/?retryWrites=true&w=majority&appName=flytunerdb`,
@@ -19,4 +22,3 @@ const connectDB = async () => {
   } 
 }; 
  
-module.exports = connectDB;
