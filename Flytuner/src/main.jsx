@@ -7,6 +7,7 @@ import PdfSummary from './components/pdfSummary/pdfSummary.jsx'
 import Login from './components/login/login.jsx'
 import ErrorPage from './components/errorPage/errorPage.jsx'
 import FileSelectCheckBox from './components/fileSelectCheckBox/fileSelectCheckBox.jsx'
+import QuizQnA from './components/quizQnA/quizQnA.jsx'
 
 
 const router = createBrowserRouter([
@@ -23,6 +24,11 @@ const router = createBrowserRouter([
   {
     path: '/chkbx',
     element: <FileSelectCheckBox/>,
+    errorElement:<ErrorPage/>
+  },
+  {
+    path: '/quest',
+    element: <QuizQnA/>,
     errorElement:<ErrorPage/>
   }
 ]);

@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import styles from "./pdfSummary.module.css";
 import docImg from '../../assets/doc.png';
 import FileSelectCheckBox from "../fileSelectCheckBox/fileSelectCheckBox";
+import QuizQnA from "../quizQnA/quizQnA";
 
 
 export default function PdfSummary(){
@@ -17,15 +18,21 @@ export default function PdfSummary(){
     
     const [fileName, setFileName] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
-    const [dataReceived, setDatareceived] = useState();
-    const [isFile, setIsFile] = useState(false);
     
-    const [outputSize,setOutputSize] = useState("50");
-    const isChecked = useRef([]);
-    const [contents, setContents] = useState([]);
+    const [dataReceived, setDataReceived] = useState();
+    const [isSummary, setIsSummary] = useState(false);
     const [uploadedFileIDS,setUploadedFileIDS] = useState([]);
     const editedFileIDS = useRef([]);
+    const [outputSize,setOutputSize] = useState("50");
+
+    const [isFile, setIsFile] = useState(false);
+    const isChecked = useRef([]);
     const [isEdit,setIsEdit] = useState(true)
+
+    const [quizReceived, setQuizReceived] = useState([]);
+    const [isQuiz, setIsQuiz] = useState(false);
+    const [questionCount,setQuestionCount] = useState("5");
+    const [isCorrect, setIsCorrect] = useState(false);
 
     const counter = useRef(0)
 
@@ -51,12 +58,7 @@ export default function PdfSummary(){
                     return newVal
             }
         )
-        setContents((content) => {content = tempArr
-            console.log("tempArr",tempArr)
-            console.log(typeof content)
-            return content
-
-        });
+        
         
         if (file) {
             setFileName(file[0].name);
@@ -77,7 +79,7 @@ export default function PdfSummary(){
         
                 const response = await axios({method: 'post', url: 'http://localhost:8000/api/data', data: formData, headers: {'Content-Type': `multipart/form-data;`}})
                 console.log(response.data);
-                setUploadedFileIDS(response.data.dataBuffer);
+                setUploadedFileIDS(c=>c.concat(response.data.dataBuffer));
                 for (let i = 0; i < response.data.dataBuffer.length; i++) {
                     editedFileIDS.current.push(response.data.dataBuffer[i])
                 }
@@ -112,8 +114,8 @@ async function handleFileRemove (){
            
            
             setIsFile(false);
-            setDatareceived(false)
-            setContents([]);
+            setDataReceived(false)
+            setIsSummary(false);
             editedFileIDS.current = [];
             setUploadedFileIDS([])
             
@@ -136,9 +138,10 @@ async function summeraizeFiles(){
             console.log("reties:" + counter.current)
             summeraizeFiles()
         }
-        setDatareceived(response.data.summary)
+        setDataReceived(response.data.summary)
+        setIsSummary(true)
     return
-        // setDatareceived(response.data.AIres);
+    
            
            } catch (error) {
         console.error("Error summarizing file:", error.message);
@@ -146,13 +149,26 @@ async function summeraizeFiles(){
     
 };
 
-async function Done() {
- await axios.post(
-        'http://localhost:8000/api/updateVS',
-        { selectedFiles: editedFileIDS.current }, // body (file IDs)
-      );
-}
+async function generateQuiz(){
+    try{ 
 
+        const response = await axios.post('http://localhost:8000/api/generateQuiz',{ selectedFiles: editedFileIDS.current, size: questionCount })
+        console.log("done")
+        console.log(response.data.quizObj[1])
+    
+        setQuizReceived(response.data.quizObj)// start from here
+        setIsSummary(false)
+        setIsQuiz(true)
+
+    
+           
+           } catch (error) {
+        console.error("Error summarizing file:", error.message);
+    }
+}
+async function quizChecker(data){
+setIsCorrect(data)
+}
 function handleDEenter(e) {
     
     e.preventDefault();
@@ -201,11 +217,29 @@ return(
 
 </div>
 
-<div className={`${dataReceived ? styles.summaryArea : ''}`}>
+<div className={`${isSummary ? styles.summaryArea : ''}`}>
     <ReactMarkdown>
         {dataReceived}
     </ReactMarkdown>
 </div >
+
+<div 
+// className={`${isQuiz ? styles.quizArea : ''}`}
+>
+    <ul>
+
+    {quizReceived.map((quiz, index)=>
+    <li key={index} className={styles.Qlist}>
+<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker}/>
+    </li>
+)
+}
+
+    </ul>
+
+</div>
+
+
 <div className={`${isFile ? '' : styles.docImg}`} >
 
 
@@ -252,10 +286,9 @@ return(
             }}> <Button_Small> edit </Button_Small>
             </div>
         <div className={`${isEdit ? styles.noEdit:""}`} onClick={()=>{
-            Done();
+            // Done();
             setIsEdit(true)
         }}> <Button_Small> Done </Button_Small></div>
-        </div>
 <input type="range" 
  className={styles.slider}
  value= {outputSize}
@@ -264,14 +297,23 @@ return(
 
 <input type="number"
         min={1}
+        max={3000}
         onChange={handleOutputSize}
         placeholder="Word Range"
+        value={outputSize}
         />
  
 
     <div className={styles.submit} onClick={()=>summeraizeFiles()}>
         <Button_P >
              summarize
+             </Button_P>
+    </div>
+        </div>
+
+    <div className={styles.submit} onClick={()=>generateQuiz()}>
+        <Button_P >
+             Generate Quiz
              </Button_P>
     </div>
 
