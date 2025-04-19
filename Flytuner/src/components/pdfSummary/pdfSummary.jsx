@@ -1,7 +1,7 @@
 // import Slider_Input from "../slider_input";
 {/* <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by Bharat Icons - Flaticon</a> */}
 
-import { useState, useRef} from "react";
+import { useState, useRef, useEffect} from "react";
 import axios from "axios";
 import Button_P from "../button_purple";
 import Button_Small from "../button_small";
@@ -32,7 +32,9 @@ export default function PdfSummary(){
     const [quizReceived, setQuizReceived] = useState([]);
     const [isQuiz, setIsQuiz] = useState(false);
     const [questionCount,setQuestionCount] = useState("5");
-    const [isCorrect, setIsCorrect] = useState(false);
+    const isCorrect = useRef(false);
+    const questArray = useRef([])
+    const [showAnswers,setShowAnswers] = useState(false)
 
     const counter = useRef(0)
 
@@ -40,13 +42,19 @@ export default function PdfSummary(){
     // const audioLength = useRef()
     
 // useEffect([audioLength.current],()=>{playAudio})
-
+useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
+    return () => {
+        window.removeEventListener("beforeunload",handleFileRemove)
+    }
+},[])
     
     const handleOutputSize = (event) => {
         setOutputSize(event.target.value); // Update state with new value
       };
  
-
+      const handleQuizSize = (event) => {
+        setQuestionCount(event.target.value); // Update state with new value
+      };
 
       async function handleFileChange (event){
     try{ 
@@ -108,7 +116,7 @@ async function handleFileRemove (){
             setFileName("Upload a File");
               const response = await axios.post(
                 'http://localhost:8000/api/removeFile', // body (file IDs)
-               
+
               );
               console.log(response.data)
            
@@ -116,6 +124,7 @@ async function handleFileRemove (){
             setIsFile(false);
             setDataReceived(false)
             setIsSummary(false);
+            setIsQuiz(false)
             editedFileIDS.current = [];
             setUploadedFileIDS([])
             
@@ -140,6 +149,7 @@ async function summeraizeFiles(){
         }
         setDataReceived(response.data.summary)
         setIsSummary(true)
+        setIsQuiz(false)
     return
     
            
@@ -151,12 +161,17 @@ async function summeraizeFiles(){
 
 async function generateQuiz(){
     try{ 
-
+        questArray.current = []
         const response = await axios.post('http://localhost:8000/api/generateQuiz',{ selectedFiles: editedFileIDS.current, size: questionCount })
         console.log("done")
         console.log(response.data.quizObj[1])
     
         setQuizReceived(response.data.quizObj)// start from here
+
+        for(let i = 0; i< response.data.quizObj.length;i++){
+            questArray.current.push(false)
+        }
+
         setIsSummary(false)
         setIsQuiz(true)
 
@@ -167,7 +182,11 @@ async function generateQuiz(){
     }
 }
 async function quizChecker(data){
-setIsCorrect(data)
+isCorrect.current = data[0]
+questArray.current[data[1]] = data[0]
+console.log("index",data[1])
+console.log("is Correct", data[0])
+console.log("questArray", questArray.current)
 }
 function handleDEenter(e) {
     
@@ -195,7 +214,7 @@ function handleDOver(e) {
 return(
 <>
 <h1>
-   Flytuner AI Summeriser
+   Flytuner AI Summeriser And Study Aid
 </h1>
 
 <div className={`${styles.uploadArea} ${dragActive ? styles.active: ''}  ${isFile ? styles.shrinkDelay : ''} `}>
@@ -217,26 +236,32 @@ return(
 
 </div>
 
-<div className={`${isSummary ? styles.summaryArea : ''}`}>
+<div className={`${isSummary ? styles.summaryArea : styles.noEdit}`}>
     <ReactMarkdown>
         {dataReceived}
     </ReactMarkdown>
 </div >
 
 <div 
-// className={`${isQuiz ? styles.quizArea : ''}`}
+className={`${isQuiz ? styles.quizArea : styles.noEdit}`}
 >
-    <ul>
+    <ol>
 
     {quizReceived.map((quiz, index)=>
-    <li key={index} className={styles.Qlist}>
-<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker}/>
+    <li key={index} className={`${(questArray.current[index] && showAnswers) ? styles.Qlist: ''}`}>
+<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker} questIndex ={index}  />
+
+
     </li>
 )
 }
-
-    </ul>
-
+    </ol>
+   <div className={styles.submit} onClick={()=>{
+    setShowAnswers(!showAnswers)}}> 
+       <Button_Small>
+        SHOW ANSWERS
+        </Button_Small>
+    </div>
 </div>
 
 
@@ -292,7 +317,7 @@ return(
 <input type="range" 
  className={styles.slider}
  value= {outputSize}
- max={3000}
+ max={1000}
  onChange={handleOutputSize} />word Range: {outputSize}
 
 <input type="number"
@@ -310,13 +335,29 @@ return(
              </Button_P>
     </div>
         </div>
+        <div className={styles.fileBtns}>
+
+        <input type="range" 
+ className={styles.slider}
+ value= {questionCount}
+ max={15}
+ onChange={handleQuizSize} />No of Question: {questionCount}
+
+<input type="number"
+        min={1}
+        max={15}
+        onChange={handleQuizSize}
+        placeholder="No of Questions"
+        value={questionCount}
+        />
+ 
 
     <div className={styles.submit} onClick={()=>generateQuiz()}>
         <Button_P >
              Generate Quiz
              </Button_P>
     </div>
-
+</div>
     <div className={styles.submit} onClick={handleFileRemove}> 
        <Button_Small>
         clear

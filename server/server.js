@@ -137,7 +137,7 @@ app.post('/api/generateQuiz', async (req, res) => {
 
         // pdfDownload = await generatePdf(quiz,pdfPath);
         // audioDownload = downloadAudio(quiz,audioPath);    
-        console.log(quizObj)
+        console.log(quiz)
         res.send({quizObj})
     }catch (error){
         console.log(error)

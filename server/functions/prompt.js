@@ -50,10 +50,11 @@ export async function summarizeGemini(wordCount, files){
             };
         }));
         const content = [
-            `generate a quiz on the topics contained in the documents regardless of correlation containing ${questionCount} questions
-surround the questions in between @ and % and the options with either & and - or ; and : or _ and = 
-make sure the correct answers are always surrounded with _ and = 
-do not repeat a surrounding for the options within the same question`,
+            `generate a quiz on the topics contained in the documents regardless of correlation containing ${questionCount} well thought out questions
+surround each of the question texts in between @ and % and the option 1 with the & symbol on the left and - symbol on the right, option 2 with the ; symbol on its left and : symbol on its right
+and option 3 which is always the correct optionshould be surrounded by the _ symbol on the left and the = symbol on the right
+do not repeat a surrounding for the options within the same question
+THIS PART IS IMPORTANT PLEASE: MAKE SURE ALL THE SYMBOLS MENTIONED ONLY APPEAR ${questionCount} TIMES IN THE ENTIRE QUIZ`,
             ...parts
         ]
         

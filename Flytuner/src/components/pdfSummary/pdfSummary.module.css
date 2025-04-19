@@ -223,6 +223,28 @@ display: none;
     /* border: purple; */
     
 }
+
+.Qlist{
+    background-color: rgb(116, 255, 116);
+}
+
+.quizArea{
+    display: block;
+    /* justify-content: center; */
+    /* align-content: center; */
+    /* text-align:center; */
+    /* margin-bottom: 10px; */
+    /* margin-top: 20px; */
+    gap: 10px;
+
+    /* align-items: center; */
+
+    
+    /* height: 250px; */
+    /* margin: auto; */
+    width: 50%;
+    height: 100%;
+}
 /* Animations*/
 @keyframes shrink {
     0%{
