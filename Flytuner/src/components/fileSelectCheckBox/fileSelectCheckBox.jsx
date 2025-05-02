@@ -13,21 +13,16 @@ export default function FileSelectCheckBox({name =""}) {
 
     return (
        <>
-       
+       <div className={styles.fileSelectCheckBoxContainer}>
+
        <div className={styles.fileImg} onClick={handleCheckboxChange}>
 
            <img src={docImg} alt="image"/>
-       <div className={styles.fileSelectCheckBox}>
-            <input
-                type="checkbox"
-                id={name}
-                checked={isSelected}
-                onChange={()=>{}}
-                
-                />
-        </div>
+       
             <label className={styles.labelFile} htmlFor={name}>{name}</label>
                 </div> 
+        
+        </div>
        </>
     );
 }

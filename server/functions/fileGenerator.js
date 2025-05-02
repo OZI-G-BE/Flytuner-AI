@@ -1,4 +1,4 @@
-// import mdToPdf from md-to-pdf
+import { mdToPdf } from 'md-to-pdf'
 
 
 

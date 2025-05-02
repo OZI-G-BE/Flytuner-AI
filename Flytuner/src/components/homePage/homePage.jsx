@@ -6,37 +6,47 @@ import axios from "axios";
 import Button_P from "../button_purple";
 import Button_Small from "../button_small";
 import ReactMarkdown from 'react-markdown';
+import EscaladeLoader from "../Loaders/escaladeLoader.jsx";
 
-import styles from "./pdfSummary.module.css";
+import styles from "./homePage.module.css";
 import docImg from '../../assets/doc.png';
 import FileSelectCheckBox from "../fileSelectCheckBox/fileSelectCheckBox";
 import QuizQnA from "../quizQnA/quizQnA";
 
 
-export default function PdfSummary(){
-    
-    
+
+
+
+
+export default function HomePage(){
+
+
     const [fileName, setFileName] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
     
-    const [dataReceived, setDataReceived] = useState();
-    const [isSummary, setIsSummary] = useState(false);
+    const [dataReceived, setDataReceived] = useState("No Documents to Summarize yet");
+    const [isSummary, setIsSummary] = useState(true);
     const [uploadedFileIDS,setUploadedFileIDS] = useState([]);
     const editedFileIDS = useRef([]);
     const [outputSize,setOutputSize] = useState("50");
+    const [isSummed, setIsSummed] = useState(false)
 
     const [isFile, setIsFile] = useState(false);
     const isChecked = useRef([]);
-    const [isEdit,setIsEdit] = useState(true)
+    const [isCheckedS, setIsCheckedS] = useState([])
+    const [isEdit,setIsEdit] = useState(false)
 
     const [quizReceived, setQuizReceived] = useState([]);
     const [isQuiz, setIsQuiz] = useState(false);
     const [questionCount,setQuestionCount] = useState("5");
     const isCorrect = useRef(false);
+
     const questArray = useRef([])
     const [showAnswers,setShowAnswers] = useState(false)
 
     const counter = useRef(0)
+
+    const [isLoading, setIsLoading] = useState(false)
 
     // const audioFile = useRef()
     // const audioLength = useRef()
@@ -48,6 +58,8 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
     }
 },[])
     
+
+
     const handleOutputSize = (event) => {
         setOutputSize(event.target.value); // Update state with new value
       };
@@ -69,17 +81,17 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
         
         
         if (file) {
-            setFileName(file[0].name);
-
-                let formData = new FormData();
-        
-                for (let i = 0; i < file.length; i++) {
-                    formData.append('uploadFile', file[i]) 
-                    isChecked.current.push(true)  
-                    
-                
-                }
-        console.log(isChecked.current)
+            
+            let formData = new FormData();
+            
+            for (let i = 0; i < file.length; i++) {
+                formData.append('uploadFile', file[i]) 
+                isChecked.current.push(true)  
+                setIsCheckedS(c=>c.concat(isChecked.current[i]))
+                counter.current++
+            }
+            setFileName(`${counter.current} Files Uploaded`);
+        console.log(isCheckedS)
 
                 console.log("All files in formData:", formData.getAll('uploadFile'));   
 
@@ -92,6 +104,7 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
                     editedFileIDS.current.push(response.data.dataBuffer[i])
                 }
             setIsFile(response.data.isUploaded);
+            setDataReceived("CLICK SUMMARIZE TO GET THE SUMMARY")
             console.log("editedFileIDS::", editedFileIDS.current)
 
             
@@ -123,38 +136,54 @@ async function handleFileRemove (){
            
             setIsFile(false);
             setDataReceived(false)
-            setIsSummary(false);
-            setIsQuiz(false)
             editedFileIDS.current = [];
             setUploadedFileIDS([])
-            
+            setDataReceived("No Documents to Summarize yet")
+            // isCheckedS.current = []
+            setIsCheckedS([])
+            counter.current = 0
+            setIsSummed(false)
+            setQuizReceived([])
         }catch(error){
             console.log(error)
             console.error("Error removing file:", error.message);
         }
     };
 
+ async  function handleFileSelect (index){
+        setIsCheckedS((c)=>{
+            const copy = [...c]
+            copy[index] = !copy[index]
+            return copy})
+        // console.log("isCheckedS", isCheckedS[index])
+    }
+
 
 async function summeraizeFiles(){
     try{ 
 
          console.log(outputSize)
+         if(editedFileIDS.current.length<1){
+            setDataReceived("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO SUMMARIZE")
+            return
+         }
+         setIsLoading(true)
         const response = await axios.post('http://localhost:8000/api/summarize',{ selectedFiles: editedFileIDS.current, size: outputSize })
         console.log("done")
         
-        if(response.data.summary == "LOADING PLEASE WAIT..."){
-            counter.current++
-            console.log("reties:" + counter.current)
-            summeraizeFiles()
-        }
+        setIsLoading(false)
         setDataReceived(response.data.summary)
+        setIsSummed(response.data.issummed)
         setIsSummary(true)
         setIsQuiz(false)
     return
     
            
            } catch (error) {
+            setIsLoading(false)
         console.error("Error summarizing file:", error.message);
+        setDataReceived("Error summarizing file: " + error.message)
+        setIsSummed(false)
     }
     
 };
@@ -211,18 +240,25 @@ function handleDOver(e) {
 };
 
 
+
+
 return(
 <>
 <h1>
-   Flytuner AI Summeriser And Study Aid
+   FILE FLASH QUIZ
 </h1>
+<p>Upload Document, images and videos, summerize them and make quizes</p>
 
-<div className={`${styles.uploadArea} ${dragActive ? styles.active: ''}  ${isFile ? styles.shrinkDelay : ''} `}>
+
+<div className= {styles.mainGrid}>
+    
+
+<div className={`${styles.uploadArea} ${dragActive ? styles.active: ''} `}>
 
 <input type="file" id="upBtn" multiple onChange={handleFileChange} accept=".pdf, .txt, .png,   .jpg,   .webp,  .mp3,   .wav,   .mov,  .mpeg,  .mp4,   .mpg,   .avi,   .wmv,   .flv"/>
 
 <label htmlFor="upBtn" 
-    className={`${styles.dropArea} ${isFile ? styles.shrink : ''}`} 
+    className={`${styles.dropArea}`} 
     onDragEnter={handleDEenter} onDragOver={handleDOver} onDragLeave={handleDLeave} onDrop={handleDrop}> 
 
     <img src={docImg} alt="yp" className={`${styles.docImg} ${dragActive ? styles.docActive: ''}`} />
@@ -234,86 +270,36 @@ return(
 
 </label>
 
-</div>
-
-<div className={`${isSummary ? styles.summaryArea : styles.noEdit}`}>
+</div>  
+<div className={`${styles.tabs}`}>
+<nav className={styles.tabnavs}>
+    <ul className={styles.tabList}>
+        <li className={`${isSummary ? styles.active : styles.inactive}`} onClick={()=>{
+            setIsSummary(true)
+            setIsQuiz(false)
+        }}>Summary</li>
+        <li className={`${isQuiz ? styles.active : styles.inactive}`} onClick={()=>{
+            setIsSummary(false)
+            setIsQuiz(true)
+        }}>Quiz</li>
+    </ul>
+</nav>
+       <div className={`${isLoading ? styles.loader : styles.Inactive}`}>
+        
+        <EscaladeLoader/>
+        </div> 
+<div className={`${isSummary ? styles.summaryArea : styles.Inactive}`}>
+  
     <ReactMarkdown>
         {dataReceived}
+        
     </ReactMarkdown>
-</div >
-
-<div 
-className={`${isQuiz ? styles.quizArea : styles.noEdit}`}
->
-    <ol>
-
-    {quizReceived.map((quiz, index)=>
-    <li key={index} className={`${(questArray.current[index] && showAnswers) ? styles.Qlist: ''}`}>
-<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker} questIndex ={index}  />
 
 
-    </li>
-)
-}
-    </ol>
-   <div className={styles.submit} onClick={()=>{
-    setShowAnswers(!showAnswers)}}> 
-       <Button_Small>
-        SHOW ANSWERS
-        </Button_Small>
-    </div>
 </div>
 
+<div className={`${isSummary ? styles.summarybtn : styles.Inactive}`}>
 
-<div className={`${isFile ? '' : styles.docImg}`} >
-
-
-
-<div className={styles.slider_container}>
-    
-
-
-<ul className={`${isEdit ? styles.noFile:styles.fileFlex}`}>  
-    {uploadedFileIDS.map((file, index)=>
-        
-        <li key={index} className={styles.Hlist}>
-       
-        <div className ={styles.fileList} onClick={()=>{
-            isChecked.current[index]= !isChecked.current[index]
-            console.log(file)    
-            
-            if (file.checked==true) {
-                
-                
-                
-                editedFileIDS.current = uploadedFileIDS.filter((value)=>{return value != file})
-                console.log(editedFileIDS.current)
-                console.log("pdf summary: "+isChecked.current[index])
-                file.checked=false
-                console.log("file: ", file.checked)
-            }else{
-                editedFileIDS.current.push(file)
-                console.log(editedFileIDS.current)
-                console.log("pdf summary: "+isChecked.current[index])
-                file.checked=true
-                console.log("file: ", file.checked)
-        }
-    }}> <FileSelectCheckBox name={file.name}  />
-            </div> 
-       </li> 
-    
-)}
-    </ul> 
-    
-    <div className={styles.fileBtns}>
-        <div className={`${isEdit ? "":styles.noEdit}`} onClick={()=>{
-            setIsEdit(false)
-            }}> <Button_Small> edit </Button_Small>
-            </div>
-        <div className={`${isEdit ? styles.noEdit:""}`} onClick={()=>{
-            // Done();
-            setIsEdit(true)
-        }}> <Button_Small> Done </Button_Small></div>
 <input type="range" 
  className={styles.slider}
  value= {outputSize}
@@ -334,30 +320,112 @@ className={`${isQuiz ? styles.quizArea : styles.noEdit}`}
              summarize
              </Button_P>
     </div>
-        </div>
-        <div className={styles.fileBtns}>
 
-        <input type="range" 
- className={styles.slider}
- value= {questionCount}
- max={15}
- onChange={handleQuizSize} />No of Question: {questionCount}
+    </div>
 
-<input type="number"
-        min={1}
-        max={15}
-        onChange={handleQuizSize}
-        placeholder="No of Questions"
-        value={questionCount}
-        />
- 
+<div 
+className={`${isQuiz ? styles.quizArea : styles.Inactive}`}
+>
+    <ol>
 
-    <div className={styles.submit} onClick={()=>generateQuiz()}>
-        <Button_P >
-             Generate Quiz
-             </Button_P>
+    {quizReceived.map((quiz, index)=>
+    <li key={index} className={`${(questArray.current[index] && showAnswers) ? styles.Qlist: ''}`}>
+<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker} questIndex ={index}  />
+    </li>
+)
+}
+    </ol>
+
+
+
+   <div className={styles.submit} onClick={()=>{
+       setShowAnswers(!showAnswers)}}> 
+       <Button_Small>
+        SHOW ANSWERS
+        </Button_Small>
     </div>
 </div>
+<div className={`${isQuiz ? styles.fileBtns : styles.Inactive}`}>
+
+<input type="range" 
+className={styles.slider}
+value= {questionCount}
+max={15}
+onChange={handleQuizSize} />No of Question: {questionCount}
+
+<input type="number"
+min={1}
+max={15}
+onChange={handleQuizSize}
+placeholder="No of Questions"
+value={questionCount}
+/>
+
+
+<div className={styles.submit} onClick={()=>generateQuiz()}>
+<Button_P >
+     Generate Quiz
+     </Button_P>
+</div>
+</div>
+
+
+
+       </div>
+
+
+<div className={`${isFile ? '' : styles.docImg}`} >
+
+
+
+<div className={styles.slider_container}>
+    
+
+
+<ul className={`${isEdit ? styles.fileFlex:styles.noFile}`}>  
+    {uploadedFileIDS.map((file, index)=>
+        
+        <li key={index} className={`${isCheckedS[index] ? styles.Hlist:styles.noHighlight}`} 
+        onClick={()=>{
+            if (file.checked==true) {             
+                const copy= editedFileIDS.current.filter((value)=>{return value != file})
+                editedFileIDS.current = copy
+                console.log(editedFileIDS.current)
+                handleFileSelect(index)
+                file.checked=false
+                console.log("pdf summary: "+file.checked)
+                console.log("editedFileIDS::", editedFileIDS.current)
+            }else{
+                editedFileIDS.current.push(file)
+                console.log(editedFileIDS.current)
+                handleFileSelect(index)
+                file.checked=true
+                console.log("pdf summary: "+file.checked)
+                console.log("editedFileIDS::", editedFileIDS.current)
+        }
+    }
+    }> 
+        <div className ={styles.fileList}> 
+
+        <FileSelectCheckBox name={file.name}  />
+            </div> 
+       </li> 
+    
+)}
+    </ul> 
+    
+    <div className={styles.fileBtns}>
+        <div className={`${isEdit ? styles.noEdit:""}`} onClick={()=>{
+            setIsEdit(true)
+        }}> <Button_Small> edit </Button_Small>
+            </div>
+        <div className={`${isEdit ? "":styles.noEdit}`} onClick={()=>{
+            // Done();
+            setIsEdit(false)
+        }}> <Button_Small> Done </Button_Small></div>
+
+        </div>
+  
     <div className={styles.submit} onClick={handleFileRemove}> 
        <Button_Small>
         clear
@@ -368,16 +436,20 @@ className={`${isQuiz ? styles.quizArea : styles.noEdit}`}
 
 
 
+        </div>
 
-   <div className={ `${dataReceived ? styles.btncontainer : styles.Inactive}`  }>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/pdf" download >
+</div>
+
+   <div className={ `${isSummed ? styles.btncontainer : styles.Inactive}`  }>
+
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/pdf" download  target="_blank">
        <Button_Small>
         Download pdf
         </Button_Small>
     </a>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/audio" download >
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/audio" download target="_blank">
        <Button_Small>
         Download audio
         </Button_Small>
@@ -390,7 +462,7 @@ className={`${isQuiz ? styles.quizArea : styles.noEdit}`}
  
    
 
-</div>
+
 
 
 

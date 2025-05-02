@@ -1,12 +1,17 @@
-import dotenv from 'dotenv';
 
+
+import dotenv from 'dotenv';
 import express, {json, static as static_} from "express";
+import { mdToPdf } from 'md-to-pdf'
 import cors from "cors";
 import multer, { diskStorage } from "multer";
 import { extname } from "path";
 import { summarizeGemini,generateQuiz } from "./functions/prompt.js";
 import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
+
+
+
 // import {connectDB} from "./config/db.js";
 
 // UNUSED
@@ -40,10 +45,39 @@ let uploadedFiles = []; // might be overwritten by update vs / Done button fix t
 let pdfDownload;
 let audioDownload;
 
-let globAIFiles = [];
 let pdfPath = 'public/outputPDF.pdf';
 let audioPath = 'public/outputAudio.wav'
 
+let mimeTypesArray = [
+//     	"application/javascript",
+// 	"text/x-python",
+// 	"text/x-java-source",
+//     "text/x-csrc",
+// 	"text/x-c++src",
+// 	"application/typescript",
+//     "image/gif",
+// 	"image/svg+xml",
+// 	"image/bmp",
+// 	"image/tiff",
+// 	"image/vnd.microsoft.icon",
+// 	"audio/ogg",
+// 	"audio/opus",
+// 	"video/webm",
+// 	"video/x-msvideo",
+// 	"video/quicktime",
+// 	"video/x-ms-wmv",
+// 	"video/x-matroska",
+// 	// "text/markdown",
+// 	"text/html",
+// 	"application/xml",
+// 	"text/csv",
+// 	"application/rtf",
+// 	"application/x-yaml",
+// 	"application/json",
+//     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+// "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+// "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+];
 
 // DOWNLAODS//
 
@@ -102,14 +136,25 @@ console.log(i)
 app.post('/api/summarize', async (req, res) => {
     try{
         const wordCount = req.body.size;
-        const files = req.body.selectedFiles;
-        if (!wordCount || !files) {
+        const allFiles = req.body.selectedFiles;
+        const docFiles = []
+        const normalFiles = []
+        if (!wordCount || !allFiles) {
             return res.status(400).json({ message: "Missing required parameters." });
         }
-        const summary = await summarizeGemini(wordCount, files);
+        for(let i = 0; i < allFiles.length; i++) {
+            if (mimeTypesArray.includes(allFiles[i].mimeType)){
+                docFiles.push(allFiles[i])
+            }else{
+                normalFiles.push(allFiles[i])
+            }
+        }
+
+
+        const summary = await summarizeGemini(wordCount, normalFiles, docFiles);
         pdfDownload = await generatePdf(summary,pdfPath);
         audioDownload = downloadAudio(summary,audioPath);    
-        res.send({summary})
+        res.send({summary, issummed:true})
     }catch (error){
         console.log(error)
         res.status(500).json({ message: "An error occurred", error: error.message });
@@ -123,18 +168,27 @@ app.post('/api/generateQuiz', async (req, res) => {
         if (!questionCount || !files) {
             return res.status(400).json({ message: "Missing required parameters." });
         }
-        const quiz = await generateQuiz(questionCount, files);
-        
-        const quizData = [...quiz.matchAll(/@([\s\S]*?)%/g)].map(m => m[1].trim()); //array of questions
-        const quizans1 = [...quiz.matchAll(/&([\s\S]*?)-/g)].map(m => m[1].trim()); //array of answer1s
-        const quizans2 = [...quiz.matchAll(/;([\s\S]*?):/g)].map(m => m[1].trim()); //array of answer2s
-        const quizans3 = [...quiz.matchAll(/_([\s\S]*?)=/g)].map(m => m[1].trim()); //array of answer3s [correct answers]
-        const quizObj = []
-        for(let i = 0; i< quizData.length;i++){
 
-            quizObj.push({questions: quizData[i], ans: [[quizans1[i],  false], [quizans2[i], false], [quizans3[i], true]] })
+        for (let i = 0; i < files.length; i++) {
+            
         }
 
+        const quiz = await generateQuiz(questionCount, files);
+        
+        const quizData = []
+        const quizans1 = [] //array of answer1s
+        const quizans2 = []; //array of answer2s
+        const quizans3 = []; //array of answer3s [correct answers]
+        const quizObj = []
+        for(let i = 0; i< quiz.length;i++){
+        quizData.push(quiz[i].Question)
+        quizans1.push(quiz[i].Options[0])
+        quizans2.push(quiz[i].Options[1])
+        quizans3.push(quiz[i].Answer)
+    }
+    for(let i = 0; i< quiz.length;i++){
+    quizObj.push({questions: quizData[i], ans: [[quizans1[i],  false], [quizans2[i], false], [quizans3[i], true]] })
+    }
         // pdfDownload = await generatePdf(quiz,pdfPath);
         // audioDownload = downloadAudio(quiz,audioPath);    
         console.log(quiz)

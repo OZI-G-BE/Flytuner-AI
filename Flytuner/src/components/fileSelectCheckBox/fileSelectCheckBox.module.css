@@ -1,6 +1,6 @@
 .fileImg{
-display: flex;
-flex-direction: column;
+    display: flex;
+    flex-direction: row;
 align-items: center;
 justify-content: center;
 position: relative;
@@ -8,25 +8,24 @@ width: 10%;
 aspect-ratio: 1/1;
 }
 .fileImg img{
-
+    
     width: 50px;
-    /* border: solid red; */
     left: 500%;
     position: relative;
 }
 
 .fileSelectCheckBox{
-position:absolute;
-width: 20px;
-height: 20px;
-left:80%;
-top:10%;
-display: flex;
-flex-direction: column;
-align-items: right;
-justify-content: right;
-z-index: 10;
-
+    position:absolute;
+    width: 20px;
+    height: 20px;
+    left:80%;
+    top:10%;
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    justify-content: right;
+    z-index: 10;
+    
 }
 
 
@@ -43,3 +42,12 @@ z-index: 10;
     /* font-size: xx-small; */
 }
 /* arrange the checkbox at the topright of the image */
+
+.fileSelectCheckBoxContainer{
+    overflow: hidden;
+    position: relative;
+    left: -65%;
+    width: 200px;
+    border-radius: 10px;
+    /* border: solid red; */
+}

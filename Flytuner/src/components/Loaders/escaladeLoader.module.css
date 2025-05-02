@@ -1,0 +1,66 @@
+:root {
+    --transition-duration: 2s;
+    --path-length: 157px; /* same as getTotalLength() */
+  }
+  
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+  
+  /* body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  } */
+  
+  /* Base SVG */
+  svg {
+    overflow: visible;
+    width: 100px;
+    height: 150px;
+    animation: slide var(--transition-duration) linear infinite;
+  }
+  
+  /* Second SVG if you render two of them side by side */
+  svg:nth-child(2) {
+    animation-delay: calc(var(--transition-duration) / 4);
+  }
+  
+  /* Path inside that second SVG */
+  svg:nth-child(2) path {
+    animation-delay: calc(var(--transition-duration) / 4);
+    stroke-dasharray: 0px calc(var(--path-length) + 1px);
+    stroke-dashoffset: 1px;
+  }
+  
+  /* All paths in any SVG */
+  svg path {
+    stroke: url(#gradient);
+    stroke-width: 20px;
+    stroke-dasharray: 0 var(--path-length);
+    stroke-dashoffset: 0;
+    animation: escalade var(--transition-duration) cubic-bezier(0.8, 0, 0.2, 1) infinite;
+  }
+  
+  @keyframes slide {
+    0%   { transform: translateY(-50px); }
+    100% { transform: translateY( 50px); }
+  }
+  
+  @keyframes escalade {
+    0%   {
+      stroke-dasharray: 0 var(--path-length);
+      stroke-dashoffset: 0;
+    }
+    50%  {
+      stroke-dasharray: var(--path-length) var(--path-length);
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dasharray: var(--path-length) var(--path-length);
+      stroke-dashoffset: calc(-1 * (var(--path-length) - 1px));
+    }
+  }
+  

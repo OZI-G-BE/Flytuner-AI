@@ -1,0 +1,363 @@
+h1{
+    text-align: center;
+}
+p{
+    text-align: center;
+}
+.summaryArea{
+    border: thin;
+    position: relative;
+    border-radius: 16px;
+    width: 90%;
+    height: 80%;
+    top: 30px;
+    margin: 0px;
+    padding: 30px;
+    margin-bottom: 20px;
+    overflow: auto;
+    box-shadow: 20px 20px 20px rgba(0,0,0,0.2), -10px -10px 20px rgba(0,0,0,0.2);
+}
+
+
+.summarybtn{
+    display: block;   
+}
+.loading{
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    background-color: hsla(228, 65%, 49%, 0.2);
+    width: 100%;
+    height: 100%;
+    margin-top: -25px;
+    margin-left: -25px;
+    border-radius: 20px;
+}
+.loader{
+    position: absolute;
+    top: 45%;
+    left: 55%;
+    align-items: center;
+    justify-content: center;
+    
+}
+.tabs{
+    display: flex;
+    list-style: none;   /* remove bullets */
+    gap: 1rem; 
+    /* border: pink solid; */
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    /* border: solid black; */
+    border-radius: 25px;
+    width: 100%;
+    height: 100%;
+    grid-column: 2/4;
+    grid-row: 1/5;
+    
+}
+
+.tabList{
+    display: flex;
+    padding-left: 0px;
+    border:thin ;
+    border-radius: 25px;
+    list-style: none;
+    box-shadow: 10px 5px 10px rgba(0,0,0,0.3);
+}
+
+.tabList li{
+    padding-right: 20px;
+    padding-left: 20px;
+    text-align: center;
+}
+
+.mainGrid{
+    display: grid;
+    /* border: solid red ; */
+    border-radius: 25px;
+    grid-template-columns: 300px 1000px;
+    grid-template-rows: 200px 200px 200px 200px;
+    /* overflow: hidden; */
+}
+
+.Inactive{
+    
+    display: none;
+}
+.uploadArea{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    height: 250px;
+    margin-left: 20px;
+    height: 240px;
+    
+}
+
+
+.uploadArea input{
+    display: none;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: dotted blue;
+    border-radius: 18px;
+    
+    grid-column: 1/2;
+    grid-row: 1/4;
+}
+
+.docImg{
+width:200px;
+height:200px;
+position: absolute;
+z-index: -1;
+opacity: 50%;
+display: none;
+}
+.docActive{
+    display: block;
+}
+
+
+.uploadArea input button{
+    width: 2000px;
+}
+
+.uploadArea .dropArea{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: dotted blue;
+    border-radius: 18px;
+    text-align: center;
+    align-content: center;
+    text-align:center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    overflow:hidden;
+
+}
+
+.active{
+    border-radius: 18px;
+    background-color: hsla(228, 65%, 49%, 0.393);
+    color: black;
+    display: block;
+}
+
+.fileNamer{
+    padding: 20px;
+}
+
+
+
+
+.slider_container{
+    display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-content: center;
+ text-align:center;
+ margin-bottom: 10px;
+ margin-top: 30px;
+ gap: 10px;
+ }
+
+ .slider_container li{
+    display: inline-block;
+ }
+
+ 
+ input[type="range"]{
+     width: 170px; /* Full width */
+     height: 8px; /* Track height */
+     justify-content: center;
+     align-content: center;
+     text-align:center;
+     margin-left: auto;
+     margin-right: auto;
+  }
+  input[type="number"]{
+    justify-content: center;
+    align-content: center;
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+    margin-bottom: -10px;
+    margin-top: 20px;
+  }
+  input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{
+display: none;
+  }
+
+
+.submit{
+    align-self: center;
+    width: auto;
+    height: auto;
+display: inline;
+text-decoration: none;
+}
+
+
+
+.btncontainer{
+    display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-content: center;
+ text-align:center;
+ margin-bottom: 10px;
+ margin-top: 20px;
+ gap: 10px;
+ }
+
+a{
+    text-decoration: none;
+    color: aliceblue;
+}
+
+a .smallBtn:hover{
+    color:rgb(89, 89, 89);
+
+}
+.smallBtn{
+    align-self: center;
+    width: auto;
+    height: auto;
+    border-radius: 16px;
+    /* background-color: rgb(10, 85, 151); */
+}
+
+.noFile{
+pointer-events: none;
+display: flex;
+flex-direction: column;
+list-style: none;   /* remove bullets */
+padding: 0px;
+height: 400px;
+overflow: hidden;
+
+}
+.noEdit{
+display: none;}
+.fileList{
+    position: relative;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 170px;
+    height: 60px;
+    left: 50px;
+    margin-left: 30px;
+    /* border: solid black; */
+}
+
+.fileFlex{
+    display: flex;
+    flex-direction: column;
+    list-style: none;   /* remove bullets */
+    border: solid yellow;
+    padding: 0px;
+    height: 400px;
+    overflow: auto;
+}
+
+
+
+.Hlist{
+    display: flex;
+    position: relative;
+    list-style: none;   /* remove bullets */
+    margin: 1.5%;
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    margin-left: 50px;
+    height: 60px;
+    width: 200px;
+    /* border: solid purple; */
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2), -5px -5px 5px rgba(0,0,0,0.2);
+    
+}
+
+.noHighlight{
+    display: flex;
+    position: relative;
+    list-style: none;   /* remove bullets */
+    margin: 1.5%;
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    margin-left: 50px;
+    height: 60px;
+    width: 200px;
+    /* border: solid purple; */
+    border-radius: 10px;
+    opacity: 0.5;
+    background-color: rgba(0,0,0,0.2);
+    /* box-shadow: 5px 5px 5px rgba(0,0,0,0.2), -5px -5px 5px rgba(0,0,0,0.2); */
+}
+
+.Qlist{
+    background-color: rgb(116, 255, 116);
+}
+
+.quizArea{
+    border: thin;
+    position: relative;
+    border-radius: 16px;
+    width: 90%;
+    height: 80%;
+    top: 30px;
+    margin: 0px;
+    padding: 30px;
+    margin-bottom: 20px;
+    overflow: auto;
+    box-shadow: 20px 20px 20px rgba(0,0,0,0.2), -10px -10px 20px rgba(0,0,0,0.2);
+}
+/* Animations*/
+/* @keyframes shrink {
+    0%{
+        width: 100%;
+        height: 100%;
+    }
+
+    100%{
+        width: auto ;
+        height: 10%;
+    }
+}
+
+@keyframes shrinkDelay {
+    0%{
+      margin-bottom: 0px;
+    }
+
+    100%{
+     
+        margin-bottom: -100px;
+    }
+}
+
+.shrink{
+    animation: shrink 0.2s ease-out 0s 1 normal forwards;
+}
+.shrinkDelay{
+    animation: shrinkDelay 0.2s linear 0s 1 normal forwards; */
+/* } */

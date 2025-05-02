@@ -8,12 +8,14 @@ import Login from './components/login/login.jsx'
 import ErrorPage from './components/errorPage/errorPage.jsx'
 import FileSelectCheckBox from './components/fileSelectCheckBox/fileSelectCheckBox.jsx'
 import QuizQnA from './components/quizQnA/quizQnA.jsx'
+import HomePage from './components/homePage/homePage.jsx'
 
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element:   <Login />,
+    // element:   <Login />,
+    element: <HomePage/>,
     errorElement: <ErrorPage/>
   },
   {
@@ -29,6 +31,11 @@ const router = createBrowserRouter([
   {
     path: '/quest',
     element: <QuizQnA/>,
+    errorElement:<ErrorPage/>
+  },
+  {
+    path: '/home',
+    element: <HomePage/>,
     errorElement:<ErrorPage/>
   }
 ]);
