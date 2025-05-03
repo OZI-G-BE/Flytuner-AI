@@ -24,7 +24,7 @@ export default function HomePage(){
     const [fileName, setFileName] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
     
-    const [dataReceived, setDataReceived] = useState("No Documents to Summarize yet");
+    const [dataReceived, setDataReceived] = useState("No Files to Summarize yet");
     const [isSummary, setIsSummary] = useState(true);
     const [uploadedFileIDS,setUploadedFileIDS] = useState([]);
     const editedFileIDS = useRef([]);
@@ -37,8 +37,10 @@ export default function HomePage(){
     const [isEdit,setIsEdit] = useState(false)
 
     const [quizReceived, setQuizReceived] = useState([]);
+    const [isQuizReceived, setIsQuizReceived] = useState(false);
     const [isQuiz, setIsQuiz] = useState(false);
     const [questionCount,setQuestionCount] = useState("5");
+    const [quizHolder,setQuizHolder] = useState("no file to generate quiz yet")   
     const isCorrect = useRef(false);
 
     const questArray = useRef([])
@@ -105,6 +107,7 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
                 }
             setIsFile(response.data.isUploaded);
             setDataReceived("CLICK SUMMARIZE TO GET THE SUMMARY")
+            setQuizHolder("CLICK GENERATE QUIZ TO GET THE QUIZ")
             console.log("editedFileIDS::", editedFileIDS.current)
 
             
@@ -138,12 +141,14 @@ async function handleFileRemove (){
             setDataReceived(false)
             editedFileIDS.current = [];
             setUploadedFileIDS([])
-            setDataReceived("No Documents to Summarize yet")
+            setDataReceived("No Files to Summarize yet")
+            setQuizHolder("no file to generate quiz yet")
             // isCheckedS.current = []
             setIsCheckedS([])
             counter.current = 0
             setIsSummed(false)
             setQuizReceived([])
+            setIsQuizReceived(false)
         }catch(error){
             console.log(error)
             console.error("Error removing file:", error.message);
@@ -191,12 +196,18 @@ async function summeraizeFiles(){
 async function generateQuiz(){
     try{ 
         questArray.current = []
+        if(editedFileIDS.current.length<1){
+            setQuizHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO GENERATE QUIZ")
+            return
+         }
+         setIsLoading(true)
         const response = await axios.post('http://localhost:8000/api/generateQuiz',{ selectedFiles: editedFileIDS.current, size: questionCount })
         console.log("done")
+        setIsLoading(false)
         console.log(response.data.quizObj[1])
     
         setQuizReceived(response.data.quizObj)// start from here
-
+        setIsQuizReceived(true)
         for(let i = 0; i< response.data.quizObj.length;i++){
             questArray.current.push(false)
         }
@@ -326,6 +337,9 @@ return(
 <div 
 className={`${isQuiz ? styles.quizArea : styles.Inactive}`}
 >
+<div className={`${isQuizReceived ? styles.Inactive:''}`}>
+<p>{quizHolder}</p>
+</div>
     <ol>
 
     {quizReceived.map((quiz, index)=>
@@ -338,7 +352,7 @@ className={`${isQuiz ? styles.quizArea : styles.Inactive}`}
 
 
 
-   <div className={styles.submit} onClick={()=>{
+   <div className={`${isQuizReceived ? styles.submit:styles.Inactive}`} onClick={()=>{
        setShowAnswers(!showAnswers)}}> 
        <Button_Small>
         SHOW ANSWERS
