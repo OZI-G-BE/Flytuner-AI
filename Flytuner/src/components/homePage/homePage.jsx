@@ -1,6 +1,9 @@
 // import Slider_Input from "../slider_input";
 {/* <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by Bharat Icons - Flaticon</a> */}
 
+// next arrow
+{/* <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Smashicons - Flaticon</a> */}
+
 import { useState, useRef, useEffect} from "react";
 import axios from "axios";
 import Button_P from "../button_purple";
@@ -12,41 +15,54 @@ import styles from "./homePage.module.css";
 import docImg from '../../assets/doc.png';
 import FileSelectCheckBox from "../fileSelectCheckBox/fileSelectCheckBox";
 import QuizQnA from "../quizQnA/quizQnA";
-
-
-
+import next from "../../assets/next.png"
 
 
 
 export default function HomePage(){
 
-
+//FILE UPLOAD
     const [fileName, setFileName] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
-    
-    const [dataReceived, setDataReceived] = useState("No Files to Summarize yet");
-    const [isSummary, setIsSummary] = useState(true);
     const [uploadedFileIDS,setUploadedFileIDS] = useState([]);
-    const editedFileIDS = useRef([]);
-    const [outputSize,setOutputSize] = useState("50");
-    const [isSummed, setIsSummed] = useState(false)
-
     const [isFile, setIsFile] = useState(false);
     const isChecked = useRef([]);
     const [isCheckedS, setIsCheckedS] = useState([])
     const [isEdit,setIsEdit] = useState(false)
-
+    const editedFileIDS = useRef([]);
+    const counter = useRef(0)
+    
+    //SUMMARY
+    const [dataReceived, setDataReceived] = useState();
+    const [sumHolder, setSumHolder] = useState("No Files to Summarize yet")
+    const [isSummary, setIsSummary] = useState(true);
+    const [outputSize,setOutputSize] = useState("50");
+    const [isSummed, setIsSummed] = useState(false)
+    
+    //QUIZ
     const [quizReceived, setQuizReceived] = useState([]);
     const [isQuizReceived, setIsQuizReceived] = useState(false);
     const [isQuiz, setIsQuiz] = useState(false);
     const [questionCount,setQuestionCount] = useState("5");
     const [quizHolder,setQuizHolder] = useState("no file to generate quiz yet")   
     const isCorrect = useRef(false);
-
+    const quizScoreArr = useRef([]);
+    const [quizScore, setQuizScore] = useState(0)
     const questArray = useRef([])
     const [showAnswers,setShowAnswers] = useState(false)
 
-    const counter = useRef(0)
+    //flash cards
+    const [flashCount,setFlashCount] = useState("5")
+    const [isFlashCardsReceived, setIsFlashCardsReceived] = useState(false);
+    const [isFlashCards, setIsFlashCards] = useState(false);
+    const [FlashHolder,setFlashHolder] = useState("no file to generate flashcards yet")
+    const [flashFlipped, setFlashFlipped] = useState(false);
+    const [flashAnwser, setFlashAnswer] = useState("")
+    const [flashQuestion, setFlashQuestion] = useState("")
+    const flashArray = useRef([])
+    const currentCard = useRef(0)
+
+
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -62,25 +78,21 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
     
 
 
-    const handleOutputSize = (event) => {
+const handleOutputSize = (event) => {
         setOutputSize(event.target.value); // Update state with new value
       };
- 
-      const handleQuizSize = (event) => {
+
+const handleQuizSize = (event) => {
         setQuestionCount(event.target.value); // Update state with new value
       };
 
-      async function handleFileChange (event){
+const handleFlashSize = (event) => {
+    setFlashCount(event.target.value); // Update state with new value
+}
+
+async function handleFileChange (event){
     try{ 
-        const file = event.target.files;
-        let tempArr = Array.from(event.target.files).map(
-            (value)=>{
-               const newVal = {name: value.name, size: value.size, mimeType: value.type}
-                value.checked = true
-                    return newVal
-            }
-        )
-        
+        const file = event.target.files; 
         
         if (file) {
             
@@ -98,7 +110,7 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
                 console.log("All files in formData:", formData.getAll('uploadFile'));   
 
                 console.log(outputSize)
-        
+                setIsLoading(true)
                 const response = await axios({method: 'post', url: 'http://localhost:8000/api/data', data: formData, headers: {'Content-Type': `multipart/form-data;`}})
                 console.log(response.data);
                 setUploadedFileIDS(c=>c.concat(response.data.dataBuffer));
@@ -106,14 +118,20 @@ useEffect(()=>{window.addEventListener("beforeunload",handleFileRemove)
                     editedFileIDS.current.push(response.data.dataBuffer[i])
                 }
             setIsFile(response.data.isUploaded);
-            setDataReceived("CLICK SUMMARIZE TO GET THE SUMMARY")
+            setSumHolder("CLICK SUMMARIZE TO GET THE SUMMARY")
             setQuizHolder("CLICK GENERATE QUIZ TO GET THE QUIZ")
+            setFlashHolder("CLICK GENERATE FLASH CARDS TO GET THE FLASH CARDS")
+            setIsLoading(false)
             console.log("editedFileIDS::", editedFileIDS.current)
 
             
         }
     }catch(error){
         console.error("Error uploading PDF:", error.message);
+        setIsLoading(false)
+        setSumHolder("Error uploading Files, try again later")
+        setQuizHolder("Error uploading Files, try again later")
+        setFlashHolder("Error uploading Files, try again later")
     }
     };
     
@@ -129,40 +147,52 @@ function handleDrop(e) {
     
 async function handleFileRemove (){
   try {      
-            setFileName("Upload a File");
-              const response = await axios.post(
-                'http://localhost:8000/api/removeFile', // body (file IDs)
-
-              );
-              console.log(response.data)
-           
-           
+      const response = await axios.post(
+          'http://localhost:8000/api/removeFile', // body (file IDs)
+        );
+        console.log(response.data)
+        
+        
+        setFileName("Upload a File");
             setIsFile(false);
-            setDataReceived(false)
             editedFileIDS.current = [];
             setUploadedFileIDS([])
-            setDataReceived("No Files to Summarize yet")
-            setQuizHolder("no file to generate quiz yet")
-            // isCheckedS.current = []
+            isCheckedS.current = []
             setIsCheckedS([])
             counter.current = 0
+            
+            //Summary
+            setSumHolder("No Files to Summarize yet")
+            setDataReceived()
             setIsSummed(false)
+            
+            //Quiz
+            setQuizHolder("no file to generate quiz yet")
             setQuizReceived([])
             setIsQuizReceived(false)
+            
+            //Flash Cards
+            setIsFlashCardsReceived(false)
+            setFlashHolder("no file to generate quiz yet")
+            setFlashFlipped(false)
+            setFlashAnswer("")
+            setFlashQuestion("")
+            flashArray.current = []
+            currentCard.current = 0
+
         }catch(error){
             console.log(error)
             console.error("Error removing file:", error.message);
         }
     };
 
- async  function handleFileSelect (index){
+async  function handleFileSelect (index){
         setIsCheckedS((c)=>{
             const copy = [...c]
             copy[index] = !copy[index]
             return copy})
         // console.log("isCheckedS", isCheckedS[index])
     }
-
 
 async function summeraizeFiles(){
     try{ 
@@ -187,8 +217,9 @@ async function summeraizeFiles(){
            } catch (error) {
             setIsLoading(false)
         console.error("Error summarizing file:", error.message);
-        setDataReceived("Error summarizing file: " + error.message)
+        setDataReceived("Error Summarizing Files, try again later")
         setIsSummed(false)
+        setIsLoading(false)
     }
     
 };
@@ -210,24 +241,83 @@ async function generateQuiz(){
         setIsQuizReceived(true)
         for(let i = 0; i< response.data.quizObj.length;i++){
             questArray.current.push(false)
+            quizScoreArr.current.push(0)
         }
-
         setIsSummary(false)
-        setIsQuiz(true)
-
-    
-           
+        setIsQuiz(true)           
            } catch (error) {
-        console.error("Error summarizing file:", error.message);
+        console.error("Error uploading Files, try again later");
+        setQuizHolder("Error Generating quiz from Files, try again later")
+        setIsLoading(false)
     }
 }
+
+async function generateFlashCards(){
+    try{ 
+        
+        if(editedFileIDS.current.length<1){
+            setFlashHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO GENERATE QUIZ")
+            return
+         }
+         setIsLoading(true)
+        const response = await axios.post('http://localhost:8000/api/generateFlashCards',{ selectedFiles: editedFileIDS.current, size: flashCount })
+        console.log("done")
+        setIsLoading(false)
+        console.log(response.data.flashCards)
+    
+        flashArray.current = response.data.flashCards
+        console.log()
+         setFlashAnswer(response.data.flashCards[0].ans)
+         setFlashQuestion(response.data.flashCards[0].questions)
+         currentCard.current = 0
+        setIsFlashCardsReceived(true)
+        setIsFlashCards(true)
+        setIsSummary(false)
+        setIsQuiz(false)  
+        setIsFlashCardsReceived(true)         
+           } catch (error) {
+        console.error("Error making flascards file:", error.message);
+        setFlashHolder("Error Generating flashcards from Files, try again later")
+        setIsLoading(false)
+    }
+}
+function nextCard(){
+    if (currentCard.current == flashArray.current.length-1){
+        currentCard.current = 0
+    }else{
+        currentCard.current+=1
+    }
+    console.log("currentCard", currentCard.current)
+    console.log("flashArray", flashArray.current.length)
+    setFlashFlipped(false)
+    setFlashAnswer(flashArray.current[currentCard.current].ans)
+    setFlashQuestion(flashArray.current[currentCard.current].questions)
+}
+function prevCard(){
+    if (currentCard.current == 0){
+        currentCard.current = flashArray.current.length-1
+    }else{
+        currentCard.current-=1
+    }
+    console.log("currentCard", currentCard.current)
+    console.log("flashArray", flashArray.current.length)
+    setFlashFlipped(false)
+    setFlashAnswer(flashArray.current[currentCard.current].ans)
+    setFlashQuestion(flashArray.current[currentCard.current].questions)
+}
+
+
 async function quizChecker(data){
 isCorrect.current = data[0]
 questArray.current[data[1]] = data[0]
+quizScoreArr.current[data[1]] = data[2]
 console.log("index",data[1])
 console.log("is Correct", data[0])
 console.log("questArray", questArray.current)
+setQuizScore(quizScoreArr.current.reduce((acc, curr) => acc + curr, 0))
 }
+
+
 function handleDEenter(e) {
     
     e.preventDefault();
@@ -266,7 +356,7 @@ return(
 
 <div className={`${styles.uploadArea} ${dragActive ? styles.active: ''} `}>
 
-<input type="file" id="upBtn" multiple onChange={handleFileChange} accept=".pdf, .txt, .png,   .jpg,   .webp,  .mp3,   .wav,   .mov,  .mpeg,  .mp4,   .mpg,   .avi,   .wmv,   .flv"/>
+<input type="file" id="upBtn" multiple onChange={handleFileChange} accept=".pdf, .txt, .png, .jpg, .webp, .mp3, .wav, .mov, .mpeg, .mp4, .mpg, .avi, .wmv, .flv"/>
 
 <label htmlFor="upBtn" 
     className={`${styles.dropArea}`} 
@@ -286,13 +376,30 @@ return(
 <nav className={styles.tabnavs}>
     <ul className={styles.tabList}>
         <li className={`${isSummary ? styles.active : styles.inactive}`} onClick={()=>{
-            setIsSummary(true)
             setIsQuiz(false)
+            setIsFlashCards(false)
+            setIsSummary(true)
+            setShowAnswers(false)
+            if(dataReceived){
+
+                setIsSummed(true)
+            }
+          
         }}>Summary</li>
         <li className={`${isQuiz ? styles.active : styles.inactive}`} onClick={()=>{
             setIsSummary(false)
+            setIsFlashCards(false)
             setIsQuiz(true)
+            setIsSummed(false)
         }}>Quiz</li>
+        <li className={`${isFlashCards ? styles.active : styles.inactive}`} onClick={()=>{
+            setIsSummary(false)
+            setIsQuiz(false)
+            setIsFlashCards(true)
+            setShowAnswers(false)
+            setIsSummed(false)
+        }}> Flash Cards
+        </li>
     </ul>
 </nav>
        <div className={`${isLoading ? styles.loader : styles.Inactive}`}>
@@ -300,10 +407,13 @@ return(
         <EscaladeLoader/>
         </div> 
 <div className={`${isSummary ? styles.summaryArea : styles.Inactive}`}>
-  
+<div className={`${isSummed ? styles.Inactive: ''}`}>
+        {sumHolder}
+
+</div>
+
     <ReactMarkdown>
         {dataReceived}
-        
     </ReactMarkdown>
 
 
@@ -343,8 +453,11 @@ className={`${isQuiz ? styles.quizArea : styles.Inactive}`}
     <ol>
 
     {quizReceived.map((quiz, index)=>
-    <li key={index} className={`${(questArray.current[index] && showAnswers) ? styles.Qlist: ''}`}>
+    <li key={index} className={`${(questArray.current[index] && showAnswers) ? styles.Qlist: ''} ${(!questArray.current[index] && showAnswers) ? styles.QlistWrong:''}`}>
 <QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker} questIndex ={index}  />
+<div className={showAnswers ? styles.explanation:styles.Inactive}>
+    {quiz.Explanations}
+</div>
     </li>
 )
 }
@@ -359,17 +472,23 @@ className={`${isQuiz ? styles.quizArea : styles.Inactive}`}
         </Button_Small>
     </div>
 </div>
+
+<div className={`${showAnswers ? styles.showAnswers : styles.Inactive}`}>
+    {quizScore}/{quizReceived.length}
+    <p>Score</p>
+    </div>
+
 <div className={`${isQuiz ? styles.fileBtns : styles.Inactive}`}>
 
 <input type="range" 
 className={styles.slider}
 value= {questionCount}
-max={15}
+max={30}
 onChange={handleQuizSize} />No of Question: {questionCount}
 
 <input type="number"
 min={1}
-max={15}
+max={30}
 onChange={handleQuizSize}
 placeholder="No of Questions"
 value={questionCount}
@@ -383,7 +502,80 @@ value={questionCount}
 </div>
 </div>
 
+<div className={`${isFlashCards ? styles.flashArea : styles.Inactive}`}>
 
+<div 
+  className={`${isFlashCardsReceived ?"": styles.Inactive} `}>
+
+
+<img src={next} alt="arrow" className={styles.leftArrow}  onClick={prevCard}/>
+<img src={next} alt="arrow" className={styles.rightArrow} onClick={nextCard}/>
+
+  </div>
+
+<div className={`${isFlashCardsReceived ? styles.Inactive:''}`}>
+<p>{FlashHolder}</p>
+</div>
+
+{/* //////////////////////////// */}
+
+
+
+<div 
+  className={`${isFlashCardsReceived ? styles.flashCard : styles.Inactive} `}
+  
+>
+  <div className={styles.flashCardInner} onClick={() => setFlashFlipped(!flashFlipped)}>
+
+    <div className={ `${flashFlipped ? styles.InactiveQ : styles.unFlippedQ}`}>
+      <h2>
+        Question. <br/><br/><br/>
+        {flashQuestion}
+        </h2> 
+    </div>
+    <div className={`${flashFlipped ? styles.FlippedA : styles.InactiveQ }`}>
+    <h2>
+    Answer. <br/><br/><br/>
+        {flashAnwser}</h2>
+    </div>
+    </div>
+</div>
+</div>
+
+{/* /////////////////////////////////////////// */}
+
+
+
+
+
+
+
+<div className={`${isFlashCards ? styles.fileBtns : styles.Inactive}`}>
+
+<input type="range" 
+className={styles.slider}
+value= {flashCount}
+max={30}
+onChange={handleFlashSize} />No of FlashCards: {flashCount}
+
+<input type="number"
+min={1}
+max={30}
+onChange={handleFlashSize}
+placeholder="No of FlashCards"
+value={flashCount}
+/>
+
+
+<div className={styles.submit} onClick={()=>generateFlashCards()}>
+<Button_P >
+     Generate FlashCards
+     </Button_P>
+</div>
+
+
+
+</div>
 
        </div>
 

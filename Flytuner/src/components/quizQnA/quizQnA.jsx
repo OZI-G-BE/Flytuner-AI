@@ -11,7 +11,12 @@ const [selected, setSelected] = useState(null);
 const [answerPool, setAnswerPool] = useState(0)
 
 function handleChange  (correct, index) {
-isCorrect([correct,index])
+    if (correct == true){
+
+        isCorrect([correct,index,1])
+    }else{
+        isCorrect([correct,index,0])
+    }
 // console.log(correct, index)
 }
 

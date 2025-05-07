@@ -6,7 +6,7 @@ import { mdToPdf } from 'md-to-pdf'
 import cors from "cors";
 import multer, { diskStorage } from "multer";
 import { extname } from "path";
-import { summarizeGemini,generateQuiz } from "./functions/prompt.js";
+import { summarizeGemini,generateQuiz,generateFlashCards } from "./functions/prompt.js";
 import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
 
@@ -44,9 +44,8 @@ let uploadedFiles = []; // might be overwritten by update vs / Done button fix t
 
 let pdfDownload;
 let audioDownload;
-
-let pdfPath = 'public/outputPDF.pdf';
-let audioPath = 'public/outputAudio.wav'
+let pdfPath
+let audioPath
 
 let mimeTypesArray = [
 //     	"application/javascript",
@@ -126,10 +125,15 @@ app.post('/api/removeFile', async (req, res) => {
 console.log(i)
             unlinkSync(uploadedFiles[i].path)
             console.log("file removed: ", uploadedFiles[i])
-        }        
+        }  
+        if(pdfDownload || audioDownload){
+            unlinkSync(pdfDownload)
+            unlinkSync(audioDownload)
+        }
         res.send({removed: true})
     }catch (error){
         res.status(500).json({ message: "An error occurred", error: error.message });
+        console.log(error)
     }
 });
 
@@ -147,11 +151,23 @@ app.post('/api/summarize', async (req, res) => {
                 docFiles.push(allFiles[i])
             }else{
                 normalFiles.push(allFiles[i])
+                console.log(allFiles[i].mimeType)
             }
         }
 
 
-        const summary = await summarizeGemini(wordCount, normalFiles, docFiles);
+        const summary = await summarizeGemini(wordCount, normalFiles);
+        
+        pdfPath = "public/"+Date.now()+"outputPDF.pdf";
+        audioPath = "public/"+Date.now()+"outputPDF.wav"
+
+        if (pdfDownload || audioDownload) {
+            unlinkSync(pdfDownload);
+            unlinkSync(audioDownload);
+        }
+         pdfPath = "public/"+Date.now()+"outputPDF.pdf";
+         audioPath = "public/"+Date.now()+"outputPDF.wav"
+
         pdfDownload = await generatePdf(summary,pdfPath);
         audioDownload = downloadAudio(summary,audioPath);    
         res.send({summary, issummed:true})
@@ -168,37 +184,62 @@ app.post('/api/generateQuiz', async (req, res) => {
         if (!questionCount || !files) {
             return res.status(400).json({ message: "Missing required parameters." });
         }
-
-        for (let i = 0; i < files.length; i++) {
-            
-        }
-
         const quiz = await generateQuiz(questionCount, files);
         
         const quizData = []
         const quizans1 = [] //array of answer1s
         const quizans2 = []; //array of answer2s
         const quizans3 = []; //array of answer3s [correct answers]
+        const ansExplained = []; // array of the answer explanatoins
         const quizObj = []
         for(let i = 0; i< quiz.length;i++){
         quizData.push(quiz[i].Question)
         quizans1.push(quiz[i].Options[0])
         quizans2.push(quiz[i].Options[1])
         quizans3.push(quiz[i].Answer)
+        ansExplained.push(quiz[i].Explanation)
     }
     for(let i = 0; i< quiz.length;i++){
-    quizObj.push({questions: quizData[i], ans: [[quizans1[i],  false], [quizans2[i], false], [quizans3[i], true]] })
-    }
-        // pdfDownload = await generatePdf(quiz,pdfPath);
-        // audioDownload = downloadAudio(quiz,audioPath);    
+    quizObj.push({questions: quizData[i], ans: [[quizans1[i],  false], [quizans2[i], false], [quizans3[i], true]], Explanations: ansExplained[i] })
+    }  
         console.log(quiz)
         res.send({quizObj})
     }catch (error){
         console.log(error)
-        res.status(500).json({ message: "An error occurred", error: error.message });
+        res.status(500).json({ message: "An error occurred", error: error.message});
     }
 })
 
+
+app.post('/api/generateFlashCards', async(req,res)=>{
+    try{
+        const cardCount = req.body.size;
+        const files = req.body.selectedFiles;
+        if (!cardCount || !files) {
+            return res.status(400).json({ message: "Missing required parameters." });
+        }
+        const flashCardArray = await generateFlashCards(cardCount, files);
+
+        const flashCards = []
+        const flashQuest = []
+        const flashAns = []
+
+        for(let i = 0; i< flashCardArray.length;i++){
+            flashQuest.push(flashCardArray[i].Question)
+            flashAns.push(flashCardArray[i].Answer)
+        }
+        for(let i = 0; i< flashCardArray.length;i++){
+        flashCards.push({questions: flashQuest[i], ans: flashAns[i] })
+        }  
+
+        res.send({flashCards})
+    }
+        catch(error){
+            console.log(error)
+            res.status(500).json({ message: "An error occurred", error: error.message});
+        }
+
+})
 app.listen(8000, async ()=>{
     
     console.log("server running on port 8000")

@@ -6,11 +6,12 @@
     border-radius: 16px;
     width: 124px;
     height: 52px;
+    font-size: larger;
 }
 
 .Purple_btn:hover{
     color:rgb(89, 89, 89);
-    background-color: rgb(104, 89, 204);
+    background-color: #6859cc;
 }
 
 .btn_container{

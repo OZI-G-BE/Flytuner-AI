@@ -10,8 +10,8 @@ export default function EscaladeLoader() {
     >
       <defs>
         <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#FF56A1" stopOpacity={1} />
-          <stop offset="100%" stopColor="#FF9350" stopOpacity={1} />
+          <stop offset="0%" stopColor="#0000ff" stopOpacity={1} />
+          <stop offset="100%" stopColor="#6859cc" stopOpacity={1} />
         </linearGradient>
       </defs>
 
