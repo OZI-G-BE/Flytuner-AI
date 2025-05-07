@@ -199,7 +199,7 @@ async function summeraizeFiles(){
 
          console.log(outputSize)
          if(editedFileIDS.current.length<1){
-            setDataReceived("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO SUMMARIZE")
+            setSumHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO SUMMARIZE")
             return
          }
          setIsLoading(true)
