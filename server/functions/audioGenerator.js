@@ -1,13 +1,4 @@
 import say from "say";
-function playAudio(AIres){
-
-        say.speak(AIres)
-        // console.log(window.speechSynthesis.speaking)
-}
-
-function stopAudio(){
-    say.stop();
-}
 
 export function downloadAudio(AIres, filepath){
 
@@ -16,7 +7,4 @@ export function downloadAudio(AIres, filepath){
         console.error(err)
     }})
 return filepath;
-
 }
-
-

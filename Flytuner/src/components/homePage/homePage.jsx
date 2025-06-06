@@ -16,17 +16,17 @@ import docImg from '../../assets/doc.png';
 import FileSelectCheckBox from "../fileSelectCheckBox/fileSelectCheckBox";
 import QuizQnA from "../quizQnA/quizQnA";
 import next from "../../assets/next.png"
+// const isChecked = useRef([]);
 
 
 
 export default function HomePage(){
 
 //FILE UPLOAD
-    const [fileName, setFileName] = useState("Upload a file");
+    const [fileNamer, setFileNamer] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
     const [uploadedFileIDS,setUploadedFileIDS] = useState([]);
     const [isFile, setIsFile] = useState(false);
-    const isChecked = useRef([]);
     const [isCheckedS, setIsCheckedS] = useState([])
     const [isEdit,setIsEdit] = useState(false)
     const editedFileIDS = useRef([]);
@@ -36,7 +36,7 @@ export default function HomePage(){
     const [dataReceived, setDataReceived] = useState();
     const [sumHolder, setSumHolder] = useState("No Files to Summarize yet")
     const [isSummary, setIsSummary] = useState(true);
-    const [outputSize,setOutputSize] = useState("50");
+    const [outputSize,setOutputSize] = useState("250");
     const [isSummed, setIsSummed] = useState(false)
     
     //QUIZ
@@ -45,12 +45,12 @@ export default function HomePage(){
     const [isQuiz, setIsQuiz] = useState(false);
     const [questionCount,setQuestionCount] = useState("5");
     const [quizHolder,setQuizHolder] = useState("no file to generate quiz yet")   
-    const isCorrect = useRef(false);
-    const quizScoreArr = useRef([]);
     const [quizScore, setQuizScore] = useState(0)
-    const questArray = useRef([])
     const [showAnswers,setShowAnswers] = useState(false)
-
+    const isCorrect = useRef(false);
+    const questArray = useRef([])
+    const quizScoreArr = useRef([]);
+    
     //flash cards
     const [flashCount,setFlashCount] = useState("5")
     const [isFlashCardsReceived, setIsFlashCardsReceived] = useState(false);
@@ -100,11 +100,11 @@ async function handleFileChange (event){
             
             for (let i = 0; i < file.length; i++) {
                 formData.append('uploadFile', file[i]) 
-                isChecked.current.push(true)  
-                setIsCheckedS(c=>c.concat(isChecked.current[i]))
+                // isChecked.current.push(true)  
+                setIsCheckedS(c=>c.concat(true))
                 counter.current++
             }
-            setFileName(`${counter.current} Files Uploaded`);
+            setFileNamer(`${counter.current} Files Uploaded`);
         console.log(isCheckedS)
 
                 console.log("All files in formData:", formData.getAll('uploadFile'));   
@@ -153,17 +153,16 @@ async function handleFileRemove (){
         console.log(response.data)
         
         
-        setFileName("Upload a File");
+        setFileNamer("Upload a File");
             setIsFile(false);
             editedFileIDS.current = [];
             setUploadedFileIDS([])
-            isCheckedS.current = []
             setIsCheckedS([])
             counter.current = 0
             
             //Summary
             setSumHolder("No Files to Summarize yet")
-            setDataReceived()
+            setDataReceived(null)
             setIsSummed(false)
             
             //Quiz
@@ -196,24 +195,20 @@ async  function handleFileSelect (index){
 
 async function summeraizeFiles(){
     try{ 
-
          console.log(outputSize)
          if(editedFileIDS.current.length<1){
             setSumHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO SUMMARIZE")
             return
          }
          setIsLoading(true)
-        const response = await axios.post('http://localhost:8000/api/summarize',{ selectedFiles: editedFileIDS.current, size: outputSize })
-        console.log("done")
-        
+        const response = await axios.post('http://localhost:8000/api/summarize',
+            { selectedFiles: editedFileIDS.current, size: outputSize })        
         setIsLoading(false)
         setDataReceived(response.data.summary)
         setIsSummed(response.data.issummed)
         setIsSummary(true)
         setIsQuiz(false)
     return
-    
-           
            } catch (error) {
             setIsLoading(false)
         console.error("Error summarizing file:", error.message);
@@ -227,12 +222,13 @@ async function summeraizeFiles(){
 async function generateQuiz(){
     try{ 
         questArray.current = []
+         quizScoreArr.current = []
         if(editedFileIDS.current.length<1){
             setQuizHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO GENERATE QUIZ")
-            return
-         }
+            return}
          setIsLoading(true)
-        const response = await axios.post('http://localhost:8000/api/generateQuiz',{ selectedFiles: editedFileIDS.current, size: questionCount })
+        const response = await axios.post('http://localhost:8000/api/generateQuiz',
+            { selectedFiles: editedFileIDS.current, size: questionCount })
         console.log("done")
         setIsLoading(false)
         console.log(response.data.quizObj[1])
@@ -241,8 +237,7 @@ async function generateQuiz(){
         setIsQuizReceived(true)
         for(let i = 0; i< response.data.quizObj.length;i++){
             questArray.current.push(false)
-            quizScoreArr.current.push(0)
-        }
+            quizScoreArr.current.push(0)}
         setIsSummary(false)
         setIsQuiz(true)           
            } catch (error) {
@@ -253,22 +248,17 @@ async function generateQuiz(){
 }
 
 async function generateFlashCards(){
-    try{ 
-        
-        if(editedFileIDS.current.length<1){
+    try{ if(editedFileIDS.current.length<1){
             setFlashHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO GENERATE QUIZ")
-            return
-         }
+            return}
          setIsLoading(true)
-        const response = await axios.post('http://localhost:8000/api/generateFlashCards',{ selectedFiles: editedFileIDS.current, size: flashCount })
+        const response = await axios.post('http://localhost:8000/api/generateFlashCards',
+            { selectedFiles: editedFileIDS.current, size: flashCount })
         console.log("done")
         setIsLoading(false)
-        console.log(response.data.flashCards)
-    
-        flashArray.current = response.data.flashCards
-        console.log()
-         setFlashAnswer(response.data.flashCards[0].ans)
-         setFlashQuestion(response.data.flashCards[0].questions)
+        flashArray.current = response.data.flashCardArray
+         setFlashAnswer(response.data.flashCardArray[0].Answer)
+         setFlashQuestion(response.data.flashCardArray[0].Question)
          currentCard.current = 0
         setIsFlashCardsReceived(true)
         setIsFlashCards(true)
@@ -281,6 +271,7 @@ async function generateFlashCards(){
         setIsLoading(false)
     }
 }
+
 function nextCard(){
     if (currentCard.current == flashArray.current.length-1){
         currentCard.current = 0
@@ -290,8 +281,8 @@ function nextCard(){
     console.log("currentCard", currentCard.current)
     console.log("flashArray", flashArray.current.length)
     setFlashFlipped(false)
-    setFlashAnswer(flashArray.current[currentCard.current].ans)
-    setFlashQuestion(flashArray.current[currentCard.current].questions)
+    setFlashAnswer(flashArray.current[currentCard.current].Answer)
+    setFlashQuestion(flashArray.current[currentCard.current].Question)
 }
 function prevCard(){
     if (currentCard.current == 0){
@@ -302,8 +293,8 @@ function prevCard(){
     console.log("currentCard", currentCard.current)
     console.log("flashArray", flashArray.current.length)
     setFlashFlipped(false)
-    setFlashAnswer(flashArray.current[currentCard.current].ans)
-    setFlashQuestion(flashArray.current[currentCard.current].questions)
+    setFlashAnswer(flashArray.current[currentCard.current].Answer)
+    setFlashQuestion(flashArray.current[currentCard.current].Question)
 }
 
 
@@ -346,9 +337,9 @@ function handleDOver(e) {
 return(
 <>
 <h1>
-   FILE FLASH QUIZ
+   AI POWERED STUDY AID
 </h1>
-<p>Upload Document, images and videos, summerize them and make quizes</p>
+<h3>Upload Files summerize them, make quizes and generate flash cards</h3>
 
 
 <div className= {styles.mainGrid}>
@@ -364,7 +355,7 @@ return(
 
     <img src={docImg} alt="yp" className={`${styles.docImg} ${dragActive ? styles.docActive: ''}`} />
 
-    <span id="file-name" ><p className={styles.fileNamer}>{fileName
+    <span id="file-name" ><p className={styles.fileNamer}>{fileNamer
         //add the file select here
     }
         </p></span>
@@ -380,10 +371,7 @@ return(
             setIsFlashCards(false)
             setIsSummary(true)
             setShowAnswers(false)
-            if(dataReceived){
-
-                setIsSummed(true)
-            }
+            
           
         }}>Summary</li>
         <li className={`${isQuiz ? styles.active : styles.inactive}`} onClick={()=>{
@@ -428,8 +416,8 @@ return(
  onChange={handleOutputSize} />word Range: {outputSize}
 
 <input type="number"
-        min={1}
-        max={3000}
+        min={200}
+        max={1000}
         onChange={handleOutputSize}
         placeholder="Word Range"
         value={outputSize}

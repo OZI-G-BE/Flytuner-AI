@@ -1,32 +1,31 @@
-
-
-import dotenv from 'dotenv';
 import express, {json, static as static_} from "express";
-import { mdToPdf } from 'md-to-pdf'
 import cors from "cors";
 import multer, { diskStorage } from "multer";
 import { extname } from "path";
 import { summarizeGemini,generateQuiz,generateFlashCards } from "./functions/prompt.js";
 import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
+import { unlinkSync } from "fs";
+import dotenv from 'dotenv';
 
 
-
-// import {connectDB} from "./config/db.js";
 
 // UNUSED
+// import {connectDB} from "./config/db.js";
+// import { mdToPdf } from 'md-to-pdf'
 // import T from "tesseract.js";
 // import PrompterModel from "./models/Prompter.model.js";
 // import pdfParse from "pdf-parse";
-import { unlinkSync } from "fs";
 // UNUSED
+
 
 dotenv.config({
   path: './environment/.env'
 });
+
 const app = express();
 const corsOptions = {origin:"http://localhost:5173",}
-
+const PORT = process.env.PORT || 5000;
 const storage = diskStorage({
     destination:(req,file,cb)=>{cb(null,'Files/'); },
     
@@ -35,11 +34,12 @@ const storage = diskStorage({
 
 
 const upload = multer({storage:storage})
+
+
 app.use(json());
 app.use(cors(corsOptions));
 app.use(static_('public'));
 
-let outputSize;
 let uploadedFiles = []; // might be overwritten by update vs / Done button fix that
 
 let pdfDownload;
@@ -47,7 +47,7 @@ let audioDownload;
 let pdfPath
 let audioPath
 
-let mimeTypesArray = [
+// let mimeTypesArray = [
 //     	"application/javascript",
 // 	"text/x-python",
 // 	"text/x-java-source",
@@ -76,7 +76,7 @@ let mimeTypesArray = [
 //     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 // "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-];
+// ];
 
 // DOWNLAODS//
 
@@ -88,7 +88,7 @@ app.get('/api/data/download/audio', (req, res) => {
     res.download(audioDownload); // Prompts a download in the frontend
 });
 
-app.get('/api/data/download/audio/playAudio', (req, res) => {/* logic to play a sound*/});
+
 
 
     //RECIEVE FRONTEND DATA//
@@ -130,6 +130,8 @@ console.log(i)
             unlinkSync(pdfDownload)
             unlinkSync(audioDownload)
         }
+        pdfDownload = null;
+        audioDownload = null;
         res.send({removed: true})
     }catch (error){
         res.status(500).json({ message: "An error occurred", error: error.message });
@@ -137,38 +139,42 @@ console.log(i)
     }
 });
 
+
+
+
+// const docFiles = []
+// const normalFiles = []
+    //   for(let i = 0; i < allFiles.length; i++) {
+    //         if (mimeTypesArray.includes(allFiles[i].mimeType)){
+    //             docFiles.push(allFiles[i])
+    //         }else{
+    //             normalFiles.push(allFiles[i])
+    //             console.log(allFiles[i].mimeType)
+    //         }
+    //     }
+
+
+
+
 app.post('/api/summarize', async (req, res) => {
     try{
         const wordCount = req.body.size;
         const allFiles = req.body.selectedFiles;
-        const docFiles = []
-        const normalFiles = []
         if (!wordCount || !allFiles) {
-            return res.status(400).json({ message: "Missing required parameters." });
-        }
-        for(let i = 0; i < allFiles.length; i++) {
-            if (mimeTypesArray.includes(allFiles[i].mimeType)){
-                docFiles.push(allFiles[i])
-            }else{
-                normalFiles.push(allFiles[i])
-                console.log(allFiles[i].mimeType)
-            }
-        }
-
-
-        const summary = await summarizeGemini(wordCount, normalFiles);
+            return res.status(400).json({ message: "Missing required parameters." });}
+        const summary = await summarizeGemini(wordCount, allFiles);
         
         pdfPath = "public/"+Date.now()+"outputPDF.pdf";
         audioPath = "public/"+Date.now()+"outputPDF.wav"
 
         if (pdfDownload || audioDownload) {
             unlinkSync(pdfDownload);
-            unlinkSync(audioDownload);
-        }
+            unlinkSync(audioDownload);}
          pdfPath = "public/"+Date.now()+"outputPDF.pdf";
          audioPath = "public/"+Date.now()+"outputPDF.wav"
 
         pdfDownload = await generatePdf(summary,pdfPath);
+        //change it to normal text before entering the audio function
         audioDownload = downloadAudio(summary,audioPath);    
         res.send({summary, issummed:true})
     }catch (error){
@@ -182,16 +188,16 @@ app.post('/api/generateQuiz', async (req, res) => {
         const questionCount = req.body.size;
         const files = req.body.selectedFiles;
         if (!questionCount || !files) {
-            return res.status(400).json({ message: "Missing required parameters." });
-        }
+            return res.status(400).json({ message: "Missing required parameters." }); }
         const quiz = await generateQuiz(questionCount, files);
         
-        const quizData = []
+        const quizData = [] //array of questions
         const quizans1 = [] //array of answer1s
         const quizans2 = []; //array of answer2s
         const quizans3 = []; //array of answer3s [correct answers]
         const ansExplained = []; // array of the answer explanatoins
-        const quizObj = []
+        const quizObj = [] // redistributed properties of quiz
+
         for(let i = 0; i< quiz.length;i++){
         quizData.push(quiz[i].Question)
         quizans1.push(quiz[i].Options[0])
@@ -200,7 +206,9 @@ app.post('/api/generateQuiz', async (req, res) => {
         ansExplained.push(quiz[i].Explanation)
     }
     for(let i = 0; i< quiz.length;i++){
-    quizObj.push({questions: quizData[i], ans: [[quizans1[i],  false], [quizans2[i], false], [quizans3[i], true]], Explanations: ansExplained[i] })
+    quizObj.push({questions: quizData[i],
+        ans: [[quizans1[i],  false],[quizans2[i], false], [quizans3[i], true]],
+        Explanations: ansExplained[i] })
     }  
         console.log(quiz)
         res.send({quizObj})
@@ -218,30 +226,20 @@ app.post('/api/generateFlashCards', async(req,res)=>{
         if (!cardCount || !files) {
             return res.status(400).json({ message: "Missing required parameters." });
         }
-        const flashCardArray = await generateFlashCards(cardCount, files);
+        const flashCardArray = await generateFlashCards(cardCount, files);  
 
-        const flashCards = []
-        const flashQuest = []
-        const flashAns = []
-
-        for(let i = 0; i< flashCardArray.length;i++){
-            flashQuest.push(flashCardArray[i].Question)
-            flashAns.push(flashCardArray[i].Answer)
-        }
-        for(let i = 0; i< flashCardArray.length;i++){
-        flashCards.push({questions: flashQuest[i], ans: flashAns[i] })
-        }  
-
-        res.send({flashCards})
+        res.send({flashCardArray})
     }
         catch(error){
             console.log(error)
             res.status(500).json({ message: "An error occurred", error: error.message});
         }
 
+
+        
 })
-app.listen(8000, async ()=>{
+app.listen(PORT, async ()=>{
     
-    console.log("server running on port 8000")
+    console.log(`server running on port ${PORT}`)
     // await connectDB()
 })
