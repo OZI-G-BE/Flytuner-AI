@@ -24,7 +24,7 @@ dotenv.config({
 });
 
 const app = express();
-const corsOptions = {origin:"https://flytuner-ai.onrender.com",}
+const corsOptions = {origin:"http://localhost:5173",}
 const PORT = process.env.PORT || 5000;
 const storage = diskStorage({
     destination:(req,file,cb)=>{cb(null,'Files/'); },
