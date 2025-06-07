@@ -5,9 +5,6 @@ server/public
 server/pdfOutput.pdf
 node_modules/
 environment/.env
-Files/
-public/*.wav
-public/*.pdf
 node_modules/
 dist/
 .env*
