@@ -1,8 +1,5 @@
 server/environment
 server/node_modules
-server/Files
-server/public
-server/pdfOutput.pdf
 node_modules/
 environment/.env
 node_modules/
