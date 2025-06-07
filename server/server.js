@@ -25,10 +25,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN?.split(',') || ['*'],  // e.g. set CORS_ORIGIN in Render to your Vite app’s URL
-};
-
+const allowed = (process.env.CORS_ORIGIN || '').split(',');
+app.use(cors({ origin: allowed }));
 
 const PORT = process.env.PORT || 8000;
 const storage = diskStorage({
@@ -41,7 +39,7 @@ const storage = diskStorage({
 const upload = multer({storage:storage})
 
 
-app.use(cors(corsOptions));
+
 app.use(json());
 app.use(static_('public'));
 

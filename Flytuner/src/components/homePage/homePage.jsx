@@ -1,8 +1,8 @@
 // import Slider_Input from "../slider_input";
-{/* <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by Bharat Icons - Flaticon</a> */}
+/* <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by Bharat Icons - Flaticon</a> */
 
 // next arrow
-{/* <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Smashicons - Flaticon</a> */}
+/* <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Smashicons - Flaticon</a> */
 
 import { useState, useRef, useEffect} from "react";
 import axios from "axios";
@@ -22,7 +22,7 @@ import next from "../../assets/next.png"
 
 export default function HomePage(){
 
-const apiBase = import.meta.env.VITE_API_BASE_URL;
+const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 //FILE UPLOAD
     const [fileNamer, setFileNamer] = useState("Upload a file");
@@ -132,6 +132,7 @@ async function handleFileChange (event){
         }
     }catch(error){
         console.error("Error uploading PDF:", error.message);
+        console.log(error)
         setIsLoading(false)
         setSumHolder("Error uploading Files, try again later")
         setQuizHolder("Error uploading Files, try again later")
