@@ -95,9 +95,6 @@ const handleFlashSize = (event) => {
 async function handleFileChange (event){
     try{ 
         
-        setIsLoading(true)
-        const response = await axios({method: 'post', url: `${apiBase}/api/data`, data: formData, headers: {'Content-Type': `multipart/form-data;`}})
-        console.log(response.data);
         const file = event.target.files; 
         
         if (file) {
@@ -110,10 +107,18 @@ async function handleFileChange (event){
                 setIsCheckedS(c=>c.concat(true))
                 counter.current++
             }
+
+            setIsLoading(true)
+            const response = await axios({method: 'post', url: `${apiBase}/api/data`, data: formData, headers: {'Content-Type': `multipart/form-data;`}})
+            console.log(response.data);
+            
             setFileNamer(`${counter.current} Files Uploaded`);
-        console.log(isCheckedS)
-                setUploadedFileIDS(c=>c.concat(response.data.dataBuffer));
-                for (let i = 0; i < response.data.dataBuffer.length; i++) {
+            
+            console.log(isCheckedS)
+            
+            setUploadedFileIDS(c=>c.concat(response.data.dataBuffer));
+            
+            for (let i = 0; i < response.data.dataBuffer.length; i++) {
                     editedFileIDS.current.push(response.data.dataBuffer[i])
                 }
             setIsFile(response.data.isUploaded);
