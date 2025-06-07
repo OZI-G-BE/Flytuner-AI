@@ -134,6 +134,7 @@ async function handleFileChange (event){
     }catch(error){
         console.error("Error uploading PDF:", error.message);
         console.log(error)
+        console.log(apiBase)
         setIsLoading(false)
         setSumHolder("Error uploading Files, try again later")
         setQuizHolder("Error uploading Files, try again later")
