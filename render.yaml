@@ -1,0 +1,27 @@
+# render.yaml
+services:
+  - type: web
+    name: flytuner-backend
+    env: node
+    plan: starter        # or “free” / “standard”
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        fromService:
+          name: flytuner-frontend
+          key: URL
+staticSites:
+  - type: static
+    name: flytuner-frontend
+    env: node
+    branch: main
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          name: flytuner-backend
+          key: URL

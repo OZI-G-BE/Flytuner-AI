@@ -22,6 +22,8 @@ import next from "../../assets/next.png"
 
 export default function HomePage(){
 
+const apiBase = import.meta.env.VITE_API_BASE_URL;
+
 //FILE UPLOAD
     const [fileNamer, setFileNamer] = useState("Upload a file");
     const [dragActive, setDragActive] = useState(false);
@@ -111,7 +113,7 @@ async function handleFileChange (event){
 
                 console.log(outputSize)
                 setIsLoading(true)
-                const response = await axios({method: 'post', url: 'http://localhost:8000/api/data', data: formData, headers: {'Content-Type': `multipart/form-data;`}})
+                const response = await axios({method: 'post', url: `${import.meta.env.VITE_API_BASE_URL}/api/data`, data: formData, headers: {'Content-Type': `multipart/form-data;`}})
                 console.log(response.data);
                 setUploadedFileIDS(c=>c.concat(response.data.dataBuffer));
                 for (let i = 0; i < response.data.dataBuffer.length; i++) {
@@ -148,7 +150,7 @@ function handleDrop(e) {
 async function handleFileRemove (){
   try {      
       const response = await axios.post(
-          'http://localhost:8000/api/removeFile', // body (file IDs)
+          `${import.meta.env.VITE_API_BASE_URL}/removeFile`, // body (file IDs)
         );
         console.log(response.data)
         
@@ -201,7 +203,7 @@ async function summeraizeFiles(){
             return
          }
          setIsLoading(true)
-        const response = await axios.post('http://localhost:8000/api/summarize',
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/summarize`,
             { selectedFiles: editedFileIDS.current, size: outputSize })        
         setIsLoading(false)
         setDataReceived(response.data.summary)
@@ -227,7 +229,7 @@ async function generateQuiz(){
             setQuizHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO GENERATE QUIZ")
             return}
          setIsLoading(true)
-        const response = await axios.post('http://localhost:8000/api/generateQuiz',
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/generateQuiz`,
             { selectedFiles: editedFileIDS.current, size: questionCount })
         console.log("done")
         setIsLoading(false)
@@ -252,7 +254,7 @@ async function generateFlashCards(){
             setFlashHolder("PLEASE A UPLOAD FILE OR SELECT A FILE FROM THE UPLOADED TO GENERATE QUIZ")
             return}
          setIsLoading(true)
-        const response = await axios.post('http://localhost:8000/api/generateFlashCards',
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/generateFlashCards`,
             { selectedFiles: editedFileIDS.current, size: flashCount })
         console.log("done")
         setIsLoading(false)
@@ -637,13 +639,13 @@ value={flashCount}
 
    <div className={ `${isSummed ? styles.btncontainer : styles.Inactive}`  }>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/pdf" download  target="_blank">
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${import.meta.env.VITE_API_BASE_URL}/api/data/download/pdf`} download  target="_blank">
        <Button_Small>
         Download pdf
         </Button_Small>
     </a>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href="http://localhost:8000/api/data/download/audio" download target="_blank">
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${import.meta.env.VITE_API_BASE_URL}/api/data/download/audio`} download target="_blank">
        <Button_Small>
         Download audio
         </Button_Small>

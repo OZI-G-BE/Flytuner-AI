@@ -7,7 +7,7 @@ import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
 import { unlinkSync } from "fs";
 import dotenv from 'dotenv';
-
+import path from "path";
 
 
 // UNUSED
@@ -19,12 +19,17 @@ import dotenv from 'dotenv';
 // UNUSED
 
 
-dotenv.config({
-  path: './environment/.env'
-});
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: './environment/.env' });
+}
 
 const app = express();
-const corsOptions = {origin:"http://localhost:5173",}
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN?.split(',') || ['*'],  // e.g. set CORS_ORIGIN in Render to your Vite app’s URL
+};
+
+
 const PORT = process.env.PORT || 8000;
 const storage = diskStorage({
     destination:(req,file,cb)=>{cb(null,'Files/'); },
@@ -36,8 +41,8 @@ const storage = diskStorage({
 const upload = multer({storage:storage})
 
 
-app.use(json());
 app.use(cors(corsOptions));
+app.use(json());
 app.use(static_('public'));
 
 let uploadedFiles = []; // might be overwritten by update vs / Done button fix that
