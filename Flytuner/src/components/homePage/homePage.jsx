@@ -22,7 +22,7 @@ import next from "../../assets/next.png"
 
 export default function HomePage(){
 
-const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const apiBase = import.meta.env.VITE_API_BASE_URL;
 
 //FILE UPLOAD
     const [fileNamer, setFileNamer] = useState("Upload a file");
@@ -109,7 +109,8 @@ async function handleFileChange (event){
             }
 
             setIsLoading(true)
-            const response = await axios({method: 'post', url: `${apiBase}/api/data`, data: formData, headers: {'Content-Type': `multipart/form-data;`}})
+            const response = await axios.post(`${apiBase}/api/data`, formData);
+
             console.log(response.data);
             
             setFileNamer(`${counter.current} Files Uploaded`);
