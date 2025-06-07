@@ -3,7 +3,7 @@ services:
   - type: web
     name: flytuner-backend
     env: node
-    plan: starter        # or “free” / “standard”
+    plan: free        # or “free” / “standard”
     buildCommand: npm install
     startCommand: npm start
     envVars:
