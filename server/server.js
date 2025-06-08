@@ -27,7 +27,7 @@ const app = express();
 
 const allowed = (process.env.CORS_ORIGIN || '').split(',');
 app.use(cors({
-  origin: 'https://flytuner-ai-fromt-end.onrender.com',
+  origin: allowed,
   credentials: true,
 }));
 
