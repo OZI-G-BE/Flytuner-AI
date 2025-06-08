@@ -26,7 +26,10 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 
 const allowed = (process.env.CORS_ORIGIN || '').split(',');
-app.use(cors({ origin: allowed }));
+app.use(cors({
+  origin: 'https://flytuner-ai-fromt-end.onrender.com',
+  credentials: true,
+}));
 
 const PORT = process.env.PORT || 8000;
 const storage = diskStorage({
@@ -244,5 +247,6 @@ app.post('/api/generateFlashCards', async(req,res)=>{
 app.listen(PORT, async ()=>{
     
     console.log(`server running on port ${PORT}`)
+    console.log(`the allowed origins are: ${allowed}`)
     // await connectDB()
 })
