@@ -219,6 +219,7 @@ async function summeraizeFiles(){
            } catch (error) {
             setIsLoading(false)
         console.error("Error summarizing file:", error.message);
+        console.log(error)
         setDataReceived("Error Summarizing Files, try again later")
         setIsSummed(false)
         setIsLoading(false)

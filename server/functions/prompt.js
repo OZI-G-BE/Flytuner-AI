@@ -12,7 +12,7 @@ export async function summarizeGemini(wordCount, normalFiles) {
         const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
     const parts = await Promise.all(normalFiles.map(async (file) => {
         console.log(".\\" + file.path)
-        const buffer = await fs.readFile(".\\" + file.path);
+        const buffer = await fs.readFile(path.join(process.cwd(), file.path));
         return {
             inlineData: {
                 mimeType: file.mimeType,
@@ -48,7 +48,7 @@ export async function summarizeGemini(wordCount, normalFiles) {
     export async function generateQuiz(questionCount, files){
         const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
         const parts = await Promise.all(files.map(async (file) => {
-            const buffer = await fs.readFile(".\\" + file.path);
+            const buffer = await fs.readFile( path.join(process.cwd(), file.path));
             return {
                 inlineData: {
                     mimeType: file.mimeType,
@@ -94,7 +94,7 @@ export async function summarizeGemini(wordCount, normalFiles) {
     export async function generateFlashCards(cardCount,files){
         const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
         const parts = await Promise.all(files.map(async (file) => {
-            const buffer = await fs.readFile(".\\" + file.path);
+            const buffer = await fs.readFile(path.join(process.cwd(), file.path));
             return {
                 inlineData: {
                     mimeType: file.mimeType,
