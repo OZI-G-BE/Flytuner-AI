@@ -135,9 +135,9 @@ console.log(i)
         if(pdfDownload || audioDownload){
             unlinkSync(pdfDownload)
             unlinkSync(audioDownload)
+            pdfDownload = null;
+            audioDownload = null;
         }
-        pdfDownload = null;
-        audioDownload = null;
         res.send({removed: true})
     }catch (error){
         res.status(500).json({ message: "An error occurred", error: error.message });
