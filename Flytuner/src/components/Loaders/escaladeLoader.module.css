@@ -16,7 +16,7 @@
   } */
   
   /* Base SVG */
-  svg {
+  .loaderSvg {
     overflow: visible;
     width: 100px;
     height: 150px;
@@ -24,19 +24,19 @@
   }
   
   /* Second SVG if you render two of them side by side */
-  svg:nth-child(2) {
+  .loaderSvg:nth-child(2) {
     animation-delay: calc(var(--transition-duration) / 4);
   }
   
   /* Path inside that second SVG */
-  svg:nth-child(2) path {
+  .loaderSvg:nth-child(2) path {
     animation-delay: calc(var(--transition-duration) / 4);
     stroke-dasharray: 0px calc(var(--path-length) + 1px);
     stroke-dashoffset: 1px;
   }
   
   /* All paths in any SVG */
-svg path {
+.loaderPath {
   stroke-dasharray: var(--path-length) var(--path-length);
   stroke-dashoffset: var(--path-length);
   animation: escalade var(--transition-duration) linear infinite;

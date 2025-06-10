@@ -17,6 +17,7 @@ export default function EscaladeLoader() {
 
       <g>
         <path d="M 50,100 A 40,40 0 0 1 50,0" 
+        className={styles.loaderPath}
           stroke="url(#gradient)"
         strokeWidth={20}
         fill="none"
@@ -24,6 +25,7 @@ export default function EscaladeLoader() {
       </g>
       <g>
         <path d="M 50,75 A 40,40 0 0 0 50,-25" 
+        className={styles.loaderPath}
           stroke="url(#gradient)"
         strokeWidth={20}
         fill="none"
