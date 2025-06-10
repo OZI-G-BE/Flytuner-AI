@@ -1,9 +1,9 @@
 import React from 'react';
-import './escaladeLoader.module.css';
+import styles from './escaladeLoader.module.css';
 
 export default function EscaladeLoader() {
   return (
-    <svg
+    <svg className={styles.loaderSvg}
       viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg"
         fill="none"
