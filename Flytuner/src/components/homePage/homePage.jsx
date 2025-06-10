@@ -398,10 +398,12 @@ return(
         </li>
     </ul>
 </nav>
+
        <div className={`${isLoading ? styles.loader : styles.Inactive}`}>
-        
         <EscaladeLoader/>
         </div> 
+
+
 <div className={`${isSummary ? styles.summaryArea : styles.Inactive}`}>
 <div className={`${isSummed ? styles.Inactive: ''}`}>
         {sumHolder}
