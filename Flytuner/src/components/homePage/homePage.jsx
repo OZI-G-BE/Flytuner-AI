@@ -399,7 +399,7 @@ return(
     </ul>
 </nav>
 
-       <div className={`${isLoading ? styles.loader : styles.Inactive}`}>
+       <div className={`${isLoading ? '' : styles.Inactive}`}>
         <EscaladeLoader/>
         </div> 
 
