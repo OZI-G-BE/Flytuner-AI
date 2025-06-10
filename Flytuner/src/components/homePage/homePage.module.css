@@ -288,6 +288,21 @@ height: 400px;
 overflow: hidden;
 
 }
+
+.Inactivesubmit{
+pointer-events: none;
+   align-self: center;
+    width: 112px;
+    height: 50px;
+display: inline;
+text-decoration: none;
+    opacity: 0.5;
+    color: aliceblue;
+    border-radius: 16px;
+    
+}
+
+
 .noEdit{
 display: none;}
 .fileList{

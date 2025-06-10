@@ -16,10 +16,18 @@ export default function EscaladeLoader() {
       </defs>
 
       <g>
-        <path d="M 50,100 A 1,1 0 0 1 50,0" />
+        <path d="M 50,100 A 40,40 0 0 1 50,0" 
+          stroke="url(#gradient)"
+        strokeWidth={20}
+        fill="none"
+        />
       </g>
       <g>
-        <path d="M 50,75 A 1,1 0 0 0 50,-25" />
+        <path d="M 50,75 A 40,40 0 0 0 50,-25" 
+          stroke="url(#gradient)"
+        strokeWidth={20}
+        fill="none"
+        />
       </g>
     </svg>
   );

@@ -36,13 +36,11 @@
   }
   
   /* All paths in any SVG */
-  svg path {
-    stroke: url(#gradient);
-    stroke-width: 20px;
-    stroke-dasharray: 0 var(--path-length);
-    stroke-dashoffset: 0;
-    animation: escalade var(--transition-duration) cubic-bezier(0.8, 0, 0.2, 1) infinite;
-  }
+svg path {
+  stroke-dasharray: var(--path-length) var(--path-length);
+  stroke-dashoffset: var(--path-length);
+  animation: escalade var(--transition-duration) linear infinite;
+}
   
   @keyframes slide {
     0%   { transform: translateY(-50px); }
@@ -53,14 +51,17 @@
     0%   {
       stroke-dasharray: 0 var(--path-length);
       stroke-dashoffset: 0;
+    opacity: 0%;
     }
     50%  {
       stroke-dasharray: var(--path-length) var(--path-length);
       stroke-dashoffset: 0;
+      opacity: 100%;
     }
     100% {
       stroke-dasharray: var(--path-length) var(--path-length);
       stroke-dashoffset: calc(-1 * (var(--path-length) - 1px));
+      opacity: 0%;
     }
   }
   

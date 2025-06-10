@@ -432,7 +432,7 @@ return(
         />
  
 
-    <div className={styles.submit} onClick={()=>summeraizeFiles()}>
+    <div className={`${isLoading ? styles.Inactivesubmit : styles.submit}`} onClick={()=>summeraizeFiles()}>
         <Button_P >
              summarize
              </Button_P>
@@ -491,7 +491,7 @@ value={questionCount}
 />
 
 
-<div className={styles.submit} onClick={()=>generateQuiz()}>
+<div className={`${isLoading ? styles.Inactivesubmit : styles.submit}`} onClick={()=>generateQuiz()}>
 <Button_P >
      Generate Quiz
      </Button_P>
@@ -563,7 +563,7 @@ value={flashCount}
 />
 
 
-<div className={styles.submit} onClick={()=>generateFlashCards()}>
+<div className={`${isLoading ? styles.Inactivesubmit : styles.submit}`} onClick={()=>generateFlashCards()}>
 <Button_P >
      Generate FlashCards
      </Button_P>
