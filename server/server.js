@@ -125,12 +125,13 @@ const dataBuffer = [];
 
 app.post('/api/removeFile', async (req, res) => {
     try{
+        removeFiles = req.body.selectedFiles;
         // console.log(uploadedFiles.length)
-        const len = uploadedFiles.length
+        const len = removeFiles.length
         for (let i = 0; i < len; i++) {
 console.log(i)
-            unlinkSync(uploadedFiles[i].path)
-            console.log("file removed: ", uploadedFiles[i])
+            unlinkSync(removeFiles[i].path)
+            console.log("file removed: ", removeFiles[i])
         }  
         if(pdfDownload || audioDownload){
             unlinkSync(pdfDownload)

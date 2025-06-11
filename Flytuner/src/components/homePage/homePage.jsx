@@ -156,7 +156,7 @@ function handleDrop(e) {
 async function handleFileRemove (){
   try {      
       const response = await axios.post(
-          `${apiBase}/api/removeFile`, // body (file IDs)
+          `${apiBase}/api/removeFile`, { selectedFiles: editedFileIDS.current} // body (file IDs)
         );
         console.log(response.data)
         
