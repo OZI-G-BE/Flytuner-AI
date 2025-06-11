@@ -52,7 +52,7 @@ let pdfDownload;
 let audioDownload;
 let pdfPath
 let audioPath
-
+let externalKey
 // let mimeTypesArray = [
 //     	"application/javascript",
 // 	"text/x-python",
@@ -168,7 +168,13 @@ app.post('/api/summarize', async (req, res) => {
         const allFiles = req.body.selectedFiles;
         if (!wordCount || !allFiles) {
             return res.status(400).json({ message: "Missing required parameters." });}
-        const summary = await summarizeGemini(wordCount, allFiles);
+        
+        let summary;
+        if (externalKey === undefined || externalKey === null || externalKey == '') {
+            summary = await summarizeGemini(wordCount, allFiles);
+        }else{
+            summary = await summarizeGemini(wordCount, allFiles, externalKey);
+        }
         
         pdfPath = "public/"+Date.now()+"outputPDF.pdf";
         audioPath = "public/"+Date.now()+"outputPDF.wav"
@@ -195,7 +201,14 @@ app.post('/api/generateQuiz', async (req, res) => {
         const files = req.body.selectedFiles;
         if (!questionCount || !files) {
             return res.status(400).json({ message: "Missing required parameters." }); }
-        const quiz = await generateQuiz(questionCount, files);
+
+            let quiz;
+        if (externalKey === undefined || externalKey === null || externalKey == '') {
+            quiz = await generateQuiz(questionCount, files);
+        }else{
+            quiz = await generateQuiz(questionCount, files, externalKey);
+        }
+        
         
         const quizData = [] //array of questions
         const quizans1 = [] //array of answer1s
@@ -232,7 +245,14 @@ app.post('/api/generateFlashCards', async(req,res)=>{
         if (!cardCount || !files) {
             return res.status(400).json({ message: "Missing required parameters." });
         }
-        const flashCardArray = await generateFlashCards(cardCount, files);  
+
+           let flashCardArray;
+        if (externalKey === undefined || externalKey === null || externalKey == '') {
+            flashCardArray = await generateFlashCards(cardCount, files)
+        }else{
+            flashCardArray = await generateFlashCards(cardCount, files,externalKey);
+        }
+        
 
         res.send({flashCardArray})
     }
@@ -244,6 +264,18 @@ app.post('/api/generateFlashCards', async(req,res)=>{
 
         
 })
+
+app.post('/api/saveApiKey', async (req, res) => {
+    try{
+        externalKey = req.body.extAPIKey;
+
+    }
+    catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "An error occurred", error: error.message });
+    }})
+
+
 app.listen(PORT, async ()=>{
     
     console.log(`server running on port ${PORT}`)

@@ -8,8 +8,8 @@ dotenv.config({path: '../environment/.env'});
  //points to my file of environment variables
 
 
-export async function summarizeGemini(wordCount, normalFiles) {
-        const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
+export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.env.API_KEY) {
+        const aiT = new GoogleGenAI({ apiKey: API_KEY});
     const parts = await Promise.all(normalFiles.map(async (file) => {
         console.log(".\\" + file.path)
         const buffer = await fs.readFile(path.join(process.cwd(), file.path));
@@ -45,8 +45,8 @@ export async function summarizeGemini(wordCount, normalFiles) {
 
 
     
-    export async function generateQuiz(questionCount, files){
-        const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
+    export async function generateQuiz(questionCount, files, API_KEY = process.env.API_KEY){
+        const aiT = new GoogleGenAI({ apiKey: API_KEY});
         const parts = await Promise.all(files.map(async (file) => {
             const buffer = await fs.readFile( path.join(process.cwd(), file.path));
             return {
@@ -91,8 +91,8 @@ export async function summarizeGemini(wordCount, normalFiles) {
                     },},},});
         return JSON.parse(result.text)}
     
-    export async function generateFlashCards(cardCount,files){
-        const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
+    export async function generateFlashCards(cardCount,files, API_KEY = process.env.API_KEY){
+        const aiT = new GoogleGenAI({ apiKey: API_KEY});
         const parts = await Promise.all(files.map(async (file) => {
             const buffer = await fs.readFile(path.join(process.cwd(), file.path));
             return {
@@ -180,7 +180,7 @@ export async function summarizeGemini(wordCount, normalFiles) {
         
             // parts.push(...docResults)
             // async function waitForFile(name) {
-                //     const aiT = new GoogleGenAI({ apiKey: process.env.API_KEY});
+                //     const aiT = new GoogleGenAI({ apiKey: API_KEY});
                 //     let status = await aiT.files.get({ name });
                 //     while (status.state === 'PROCESSING') {
                 //       await new Promise((r) => setTimeout(r, 2000));

@@ -1,0 +1,15 @@
+.inputField{
+    height: 25px;
+    width: 300px;
+    border-radius: 16px;
+    text-align: center;
+}
+.containerF{
+    margin-top: -20px;
+    margin-bottom: -20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}

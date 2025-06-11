@@ -16,6 +16,7 @@ import docImg from '../../assets/doc.png';
 import FileSelectCheckBox from "../fileSelectCheckBox/fileSelectCheckBox";
 import QuizQnA from "../quizQnA/quizQnA";
 import next from "../../assets/next.png"
+import ApiKeyFeild from "../apiKeyFeild/apiKeyFeild.jsx";
 // const isChecked = useRef([]);
 
 
@@ -398,7 +399,7 @@ return(
         </li>
     </ul>
 </nav>
-
+<ApiKeyFeild/>
        <div className={`${isLoading ? styles.loader : styles.Inactive}`}>
         <EscaladeLoader/>
         </div> 
