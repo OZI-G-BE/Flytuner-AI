@@ -25,7 +25,8 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
         `explain all of the topics contained in the documents regardless of correlation and 
         if it is a video or audio uploaded, 
         summerize the contents in ${wordCount} words
-        if it is a story then give an overview in  ${wordCount} words
+        if it is a story then give an overview in  ${wordCount} words 
+        and make sure that the entire document has only ${wordCount} words or as close to ${wordCount} as possible
         and also add a "\n" after every 80th character. and make sure to touch 
         on every topic and heading and make sure to use ## to format the heading titles in markdown.
         And if you cannot find any topic in the document or any document at all, then please only say 

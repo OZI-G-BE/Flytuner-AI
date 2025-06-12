@@ -34,6 +34,7 @@ const apiBase = import.meta.env.VITE_API_BASE_URL;
     const [isEdit,setIsEdit] = useState(false)
     const editedFileIDS = useRef([]);
     const counter = useRef(0)
+    const GGAPIK = useRef()
     
     //SUMMARY
     const [dataReceived, setDataReceived] = useState();
@@ -41,6 +42,9 @@ const apiBase = import.meta.env.VITE_API_BASE_URL;
     const [isSummary, setIsSummary] = useState(true);
     const [outputSize,setOutputSize] = useState("250");
     const [isSummed, setIsSummed] = useState(false)
+    const pathPDF = useRef();
+    const pathAudio = useRef();
+    const sumDL = useRef("yooo")
     
     //QUIZ
     const [quizReceived, setQuizReceived] = useState([]);
@@ -210,10 +214,13 @@ async function summeraizeFiles(){
          }
          setIsLoading(true)
         const response = await axios.post(`${apiBase}/api/summarize`,
-            { selectedFiles: editedFileIDS.current, size: outputSize })        
+            { selectedFiles: editedFileIDS.current, size: outputSize, API_KEY: GGAPIK.current })
         setIsLoading(false)
         setDataReceived(response.data.summary)
         setIsSummed(response.data.issummed)
+        sumDL.current = response.data.summary
+        pathAudio.current = response.data.audioPath
+        pathPDF.current = response.data.pdfPath
         setIsSummary(true)
         setIsQuiz(false)
     return
@@ -237,7 +244,7 @@ async function generateQuiz(){
             return}
          setIsLoading(true)
         const response = await axios.post(`${apiBase}/api/generateQuiz`,
-            { selectedFiles: editedFileIDS.current, size: questionCount })
+            { selectedFiles: editedFileIDS.current, size: questionCount, API_KEY: GGAPIK.current })
         console.log("done")
         setIsLoading(false)
         console.log(response.data.quizObj[1])
@@ -262,7 +269,7 @@ async function generateFlashCards(){
             return}
          setIsLoading(true)
         const response = await axios.post(`${apiBase}/api/generateFlashCards`,
-            { selectedFiles: editedFileIDS.current, size: flashCount })
+            { selectedFiles: editedFileIDS.current, size: flashCount, API_KEY: GGAPIK.current })
         console.log("done")
         setIsLoading(false)
         flashArray.current = response.data.flashCardArray
@@ -340,7 +347,9 @@ function handleDOver(e) {
     
 };
 
-
+async function sakadays(data){
+GGAPIK.current = data
+}
 
 
 return(
@@ -399,7 +408,7 @@ return(
         </li>
     </ul>
 </nav>
-<ApiKeyFeild/>
+<ApiKeyFeild tunnelEffect ={sakadays}/>
        <div className={`${isLoading ? styles.loader : styles.Inactive}`}>
         <EscaladeLoader/>
         </div> 
@@ -435,7 +444,7 @@ return(
         />
  
 
-    <div className={`${isLoading ? styles.Inactivesubmit : styles.submit}`} onClick={()=>summeraizeFiles()}>
+    <div className={`${isLoading ? styles.Inactivesubmit : styles.submit}`}  onClick={()=>summeraizeFiles()}>
         <Button_P >
              summarize
              </Button_P>
@@ -648,13 +657,13 @@ value={flashCount}
 
    <div className={ `${isSummed ? styles.btncontainer : styles.Inactive}`  }>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/pdf`} download  target="_blank">
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/pdf?path=${pathPDF.current}&summary=${encodeURIComponent(sumDL.current)}`} download  target="_blank">
        <Button_Small>
         Download pdf
         </Button_Small>
     </a>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/audio`} download target="_blank">
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/audio?path=${pathAudio.current}&summary=${encodeURIComponent(sumDL.current)}`} download target="_blank">
        <Button_Small>
         Download audio
         </Button_Small>

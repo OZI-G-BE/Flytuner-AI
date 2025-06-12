@@ -86,11 +86,15 @@ let externalKey
 
 // DOWNLAODS//
 
-app.get('/api/data/download/pdf', (req, res) => {
+app.get('/api/data/download/pdf', async (req, res) => {
+    console.log("PDF Download requested with summary: ", req.query.summary, " and path: ", req.query.path);
+
+    const pdfDownload = await generatePdf(req.query.summary,req.query.path);
     res.download(pdfDownload); // Prompts a download in the frontend
 });
 
-app.get('/api/data/download/audio', (req, res) => {
+app.get('/api/data/download/audio', async (req, res) => {
+   const  audioDownload = await downloadAudio(req.query.summary,req.query.path);  
     res.download(audioDownload); // Prompts a download in the frontend
 });
 
@@ -125,7 +129,7 @@ const dataBuffer = [];
 
 app.post('/api/removeFile', async (req, res) => {
     try{
-        removeFiles = req.body.selectedFiles;
+       const removeFiles = req.body.selectedFiles;
         // console.log(uploadedFiles.length)
         const len = removeFiles.length
         for (let i = 0; i < len; i++) {
@@ -171,6 +175,7 @@ app.post('/api/summarize', async (req, res) => {
             return res.status(400).json({ message: "Missing required parameters." });}
         
         let summary;
+        const externalKey = req.body.API_KEY;
         if (externalKey === undefined || externalKey === null || externalKey == '') {
             summary = await summarizeGemini(wordCount, allFiles);
         }else{
@@ -184,12 +189,13 @@ app.post('/api/summarize', async (req, res) => {
             unlinkSync(pdfDownload);
             unlinkSync(audioDownload);}
          pdfPath = "public/"+Date.now()+"outputPDF.pdf";
-         audioPath = "public/"+Date.now()+"outputPDF.wav"
+         audioPath = "public/"+Date.now()+"outputAudio.wav"
 
-        pdfDownload = await generatePdf(summary,pdfPath);
+        //  pdfDownload = await generatePdf(summary,pdfPath);
+        //  audioDownload = downloadAudio(summary,audioPath);    
         //change it to normal text before entering the audio function
-        audioDownload = downloadAudio(summary,audioPath);    
-        res.send({summary, issummed:true})
+        
+        res.send({summary, issummed:true, pdfPath, audioPath});
     }catch (error){
         console.log(error)
         res.status(500).json({ message: "An error occurred", error: error.message });
@@ -204,6 +210,7 @@ app.post('/api/generateQuiz', async (req, res) => {
             return res.status(400).json({ message: "Missing required parameters." }); }
 
             let quiz;
+            const externalKey = req.body.API_KEY;
         if (externalKey === undefined || externalKey === null || externalKey == '') {
             quiz = await generateQuiz(questionCount, files);
         }else{
@@ -246,6 +253,7 @@ app.post('/api/generateFlashCards', async(req,res)=>{
         if (!cardCount || !files) {
             return res.status(400).json({ message: "Missing required parameters." });
         }
+        const externalKey = req.body.API_KEY;
 
            let flashCardArray;
         if (externalKey === undefined || externalKey === null || externalKey == '') {
