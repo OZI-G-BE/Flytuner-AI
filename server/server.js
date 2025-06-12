@@ -7,7 +7,7 @@ import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
 import { unlinkSync } from "fs";
 import dotenv from 'dotenv';
-import path from "path";
+
 
 
 // UNUSED
@@ -46,13 +46,8 @@ const upload = multer({storage:storage})
 app.use(json());
 app.use(static_('public'));
 
-let uploadedFiles = []; // might be overwritten by update vs / Done button fix that
+ // might be overwritten by update vs / Done button fix that
 
-let pdfDownload;
-let audioDownload;
-let pdfPath
-let audioPath
-let externalKey
 // let mimeTypesArray = [
 //     	"application/javascript",
 // 	"text/x-python",
@@ -87,15 +82,13 @@ let externalKey
 // DOWNLAODS//
 
 app.get('/api/data/download/pdf', async (req, res) => {
-    console.log("PDF Download requested with summary: ", req.query.summary, " and path: ", req.query.path);
-
-    const pdfDownload = await generatePdf(req.query.summary,req.query.path);
-    res.download(pdfDownload); // Prompts a download in the frontend
+    
+    res.download(req.query.path); // Prompts a download in the frontend
 });
 
 app.get('/api/data/download/audio', async (req, res) => {
-   const  audioDownload = await downloadAudio(req.query.summary,req.query.path);  
-    res.download(audioDownload); // Prompts a download in the frontend
+    
+    res.download(req.query.path); // Prompts a download in the frontend
 });
 
 
@@ -107,7 +100,7 @@ app.post('/api/data', upload.array('uploadFile'),async (req, res) => {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: "No file uploaded" });      
         }
-        uploadedFiles = req.files
+      const uploadedFiles = req.files
 const dataBuffer = [];
     for (let i = 0; i < uploadedFiles.length; i++) {
     dataBuffer.push({path: uploadedFiles[i].path,
@@ -130,6 +123,8 @@ const dataBuffer = [];
 app.post('/api/removeFile', async (req, res) => {
     try{
        const removeFiles = req.body.selectedFiles;
+       const pdfDownload = req.body.pdfDownload;
+       const audioDownload = req.body.audioDownload;
         // console.log(uploadedFiles.length)
         const len = removeFiles.length
         for (let i = 0; i < len; i++) {
@@ -137,11 +132,9 @@ console.log(i)
             unlinkSync(removeFiles[i].path)
             console.log("file removed: ", removeFiles[i])
         }  
-        if(pdfDownload || audioDownload){
+        if(pdfDownload != 'null' || audioDownload != 'null'){
             unlinkSync(pdfDownload)
             unlinkSync(audioDownload)
-            pdfDownload = null;
-            audioDownload = null;
         }
         res.send({removed: true})
     }catch (error){
@@ -182,8 +175,11 @@ app.post('/api/summarize', async (req, res) => {
             summary = await summarizeGemini(wordCount, allFiles, externalKey);
         }
         
-        pdfPath = "public/"+Date.now()+"outputPDF.pdf";
-        audioPath = "public/"+Date.now()+"outputPDF.wav"
+       let pdfPath = "public/"+Date.now()+"outputPDF.pdf";
+       let audioPath = "public/"+Date.now()+"outputPDF.wav"
+
+    let pdfDownload 
+    let audioDownload
 
         if (pdfDownload || audioDownload) {
             unlinkSync(pdfDownload);
@@ -191,11 +187,11 @@ app.post('/api/summarize', async (req, res) => {
          pdfPath = "public/"+Date.now()+"outputPDF.pdf";
          audioPath = "public/"+Date.now()+"outputAudio.wav"
 
-        //  pdfDownload = await generatePdf(summary,pdfPath);
-        //  audioDownload = downloadAudio(summary,audioPath);    
         //change it to normal text before entering the audio function
-        
-        res.send({summary, issummed:true, pdfPath, audioPath});
+        pdfDownload = await generatePdf(summary,pdfPath);
+        audioDownload = downloadAudio(summary,audioPath); 
+
+        res.send({summary, issummed:true, pdfDownload, audioDownload});
     }catch (error){
         console.log(error)
         res.status(500).json({ message: "An error occurred", error: error.message });

@@ -42,9 +42,8 @@ const apiBase = import.meta.env.VITE_API_BASE_URL;
     const [isSummary, setIsSummary] = useState(true);
     const [outputSize,setOutputSize] = useState("250");
     const [isSummed, setIsSummed] = useState(false)
-    const pathPDF = useRef();
-    const pathAudio = useRef();
-    const sumDL = useRef("yooo")
+    const pathPDF = useRef('null');
+    const pathAudio = useRef('null');
     
     //QUIZ
     const [quizReceived, setQuizReceived] = useState([]);
@@ -162,7 +161,7 @@ async function handleFileRemove (){
     
     setIsLoading(true)
       const response = await axios.post(
-          `${apiBase}/api/removeFile`, { selectedFiles: editedFileIDS.current} // body (file IDs)
+          `${apiBase}/api/removeFile`, { selectedFiles: editedFileIDS.current, pdfDownload: pathPDF.current, audioDownload: pathAudio.current} // body (file IDs)
         );
         console.log(response.data)
         
@@ -221,9 +220,8 @@ async function summeraizeFiles(){
         setIsLoading(false)
         setDataReceived(response.data.summary)
         setIsSummed(response.data.issummed)
-        sumDL.current = response.data.summary
-        pathAudio.current = response.data.audioPath
-        pathPDF.current = response.data.pdfPath
+        pathAudio.current = response.data.audioDownload
+        pathPDF.current = response.data.pdfDownload
         setIsSummary(true)
         setIsQuiz(false)
     return
@@ -660,13 +658,13 @@ value={flashCount}
 
    <div className={ `${isSummed ? styles.btncontainer : styles.Inactive}`  }>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/pdf?path=${pathPDF.current}&summary=${encodeURIComponent(sumDL.current)}`} download  target="_blank">
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/pdf?path=${pathPDF.current}`} download  target="_blank">
        <Button_Small>
         Download pdf
         </Button_Small>
     </a>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/audio?path=${pathAudio.current}&summary=${encodeURIComponent(sumDL.current)}`} download target="_blank">
+    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/audio?path=${pathAudio.current}`} download target="_blank">
        <Button_Small>
         Download audio
         </Button_Small>
