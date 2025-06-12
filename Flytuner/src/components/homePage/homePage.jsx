@@ -158,7 +158,9 @@ function handleDrop(e) {
     }
     
 async function handleFileRemove (){
-  try {      
+  try {   
+    
+    setIsLoading(true)
       const response = await axios.post(
           `${apiBase}/api/removeFile`, { selectedFiles: editedFileIDS.current} // body (file IDs)
         );
@@ -190,6 +192,7 @@ async function handleFileRemove (){
             setFlashQuestion("")
             flashArray.current = []
             currentCard.current = 0
+            setIsLoading(false)
 
         }catch(error){
             console.log(error)
@@ -640,7 +643,7 @@ value={flashCount}
 
         </div>
   
-    <div className={styles.submit} onClick={handleFileRemove}> 
+    <div className={`${isLoading ? styles.Inactivesubmit : styles.submit}`} onClick={handleFileRemove}> 
        <Button_Small>
         clear
         </Button_Small>
