@@ -182,7 +182,7 @@ console.log('pdf file exists?', fs.existsSync(pdfPath));
 console.log('generateAudio wrote to:', outputMp3Path);
 console.log('audio file exists?', fs.existsSync(outputMp3Path));
 
-        const pdfBuffer =  pdfDownload;
+        const pdfBuffer =  fs.readFileSync(pdfPath);
         console.log("pdf buffer read")
 
         const audioBuffer = fs.readFileSync(outputMp3Path);
