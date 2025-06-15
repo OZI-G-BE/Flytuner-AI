@@ -21,7 +21,7 @@ export async function generatePdf(AIres,pdfPath)  {
         return pdfPath;
     }catch (error) {
         console.log(error);
-
+        console.error('Error generating PDF:', pdfPath, error);
         return false;
     }
 }
