@@ -167,6 +167,8 @@ if (!fs.existsSync(uploadDir)) {
       
        outputMp3Path   = path.join(process.cwd(), 'Files', outputMp3Name);
 
+       const fullPdfPath = path.join(process.cwd(), 'Files', pdfName);
+       const fullAudioPath = path.join(process.cwd(), 'Files', outputMp3Name);
 
         //change it to normal text before entering the audio function
         pdfDownload = await generatePdf(summary,pdfPath);
@@ -174,8 +176,6 @@ if (!fs.existsSync(uploadDir)) {
         audioDownload = await downloadAudio(summary,outputMp3Path); 
         console.log("passed audio gen")
 
-        const fullPdfPath = path.join(process.cwd(), 'Files', pdfName);
-        const fullAudioPath = path.join(process.cwd(), 'Files', outputMp3Name);
 
         console.log('App working directory is:', process.cwd());
 
@@ -185,7 +185,7 @@ console.log('file exists?', fs.existsSync(fullPdfPath));
 console.log('generateAudio wrote to:', fullAudioPath);
 console.log('file exists?', fs.existsSync(fullAudioPath));
 
-        const pdfBuffer =  fs.readFileSync(fullPdfPath);
+        const pdfBuffer =  fs.readFileSync(fullPdfPath) || pdfDownload;
         console.log("pdf buffer read")
 
         const audioBuffer = fs.readFileSync(fullAudioPath);

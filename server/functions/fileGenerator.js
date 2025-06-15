@@ -4,6 +4,13 @@ import path from 'path';
 
 export async function generatePdf(AIres,pdfPath)  {
     try{
+
+    const folder = path.dirname(pdfPath);
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
+
+
    const result = await mdToPdf({content: AIres},
         { dest: pdfPath },
         {filename: pdfPath}).catch(console.error);    
@@ -16,13 +23,7 @@ export async function generatePdf(AIres,pdfPath)  {
 
         const pdfBuffer = result.content; // Assuming result.content is a Buffer
 
-    const dir = fs.existsSync(pdfPath)
-      ? null
-      : fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
-
-fs.writeFileSync(pdfPath, pdfBuffer);
-
-        return pdfPath;
+        return pdfBuffer;
     }catch (error) {
         console.log(error);
 
