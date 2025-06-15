@@ -5,7 +5,7 @@ import { extname } from "path";
 import { summarizeGemini,generateQuiz,generateFlashCards } from "./functions/prompt.js";
 import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
-import { readFileSync, unlinkSync } from "fs";
+import fs from "fs";
 import dotenv from 'dotenv';
 import {connectDB,FileModel} from "./config/db.js";
 import path from "path";
