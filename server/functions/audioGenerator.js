@@ -1,30 +1,17 @@
-process.platform = 'linux';
-import say from "say";
-import ffmpeg from 'fluent-ffmpeg';
+import textToSpeech from '@google-cloud/text-to-speech';
 import fs from 'fs';
 
+const client = new textToSpeech.TextToSpeechClient();
 
-export  function downloadAudio(AIres, filepath, outputMp3Path){
- return new Promise((resolve, reject) => {
-say.export(AIres,"",1,filepath,(err)=>{
-        if (err) return reject(err);
-
-
-        ffmpeg(filepath)
-        .toFormat('mp3')
-        .on('end', () => {
-            console.log('Conversion to MP3 complete.');
-            fs.unlinkSync(filepath); // Optional cleanup of WAV
-            resolve(outputMp3Path);
-        })
-        .on('error', (err) => {
-              console.error('FFmpeg error:', err);
-            })
-            .save(outputMp3Path);
-    });
-});
-
-
-
-
+export async function downloadAudio(text, mp3Path) {
+  const [response] = await client.synthesizeSpeech({
+    input: { text },
+    voice: { languageCode: 'en-US', ssmlGender: 'NEUTRAL' },
+    audioConfig: { audioEncoding: 'MP3' },
+  });
+  fs.writeFileSync(mp3Path, response.audioContent, 'binary');
+  return mp3Path;
 }
+
+
+

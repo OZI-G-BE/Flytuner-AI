@@ -201,15 +201,15 @@ app.post('/api/summarize', async (req, res) => {
     let audioDownload
     let outputMp3Path
     let pdfPath
-    let audioPath
+    
     const in24h = new Date(Date.now() + 24*60*60*1000);
         pdfPath = "public/"+Date.now()+"outputPDF.pdf";
-        audioPath = "public/"+Date.now()+"outputAudio.wav"
+        
         outputMp3Path = "public/"+Date.now()+"outputAudio.mp3"
         
         //change it to normal text before entering the audio function
         pdfDownload = await generatePdf(summary,pdfPath);
-        audioDownload = await downloadAudio(summary,audioPath,outputMp3Path); 
+        audioDownload = await downloadAudio(summary,outputMp3Path); 
         
         const pdfBuffer =  readFileSync(pdfPath);
         const audioBuffer = readFileSync(audioDownload);
