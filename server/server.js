@@ -203,7 +203,9 @@ app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
     let pdfPath
     
  const uploadDir = path.join(process.cwd(), 'Files');
-
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
     const in24h = new Date(Date.now() + 24*60*60*1000);
     const timestamp = Date.now();
     
@@ -221,9 +223,13 @@ app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
         console.log("passed pdf gen")
         audioDownload = await downloadAudio(summary,outputMp3Path); 
         console.log("passed audio gen")
-        const pdfBuffer =  readFileSync(pdfDownload);
+
+        const fullPdfPath = path.join(process.cwd(), 'Files', pdfName);
+        const pdfBuffer =  readFileSync(fullPdfPath);
         console.log("pdf buffer read")
-        const audioBuffer = readFileSync(audioDownload);
+
+        const fullAudioPath = path.join(process.cwd(), 'Files', outputMp3Name);
+        const audioBuffer = readFileSync(fullAudioPath);
         console.log("audio buffer read")
 
         const title = `Summary-${timestamp}`;
