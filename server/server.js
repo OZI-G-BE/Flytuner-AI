@@ -149,8 +149,8 @@ app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
 
     let pdfDownload 
     let audioDownload
-    let outputMp3Path
-    let pdfPath
+    // let outputMp3Path
+    // let pdfPath
     
  const uploadDir = path.join(process.cwd(), 'Files');
 if (!fs.existsSync(uploadDir)) {
@@ -163,9 +163,9 @@ if (!fs.existsSync(uploadDir)) {
         
     const outputMp3Name = `${timestamp}outputAudio.mp3`
         
-     pdfPath   = path.join(process.cwd(), 'Files', pdfName);
+    let pdfPath = path.join(process.cwd(), 'Files', pdfName);
       
-       outputMp3Path   = path.join(process.cwd(), 'Files', outputMp3Name);
+    let   outputMp3Path   = path.join(process.cwd(), 'Files', outputMp3Name);
 
         //change it to normal text before entering the audio function
         pdfDownload = await generatePdf(summary,pdfPath);

@@ -1,14 +1,17 @@
 import { mdToPdf } from 'md-to-pdf'
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config({path: '../environment/.env'});
+ //points to my file of environment variables
+
+
 
 export async function generatePdf(AIres,pdfPath)  {
     try{
 
-    const folder = path.dirname(pdfPath);
-    if (!fs.existsSync(folder)) {
-      fs.mkdirSync(folder, { recursive: true });
-    }
+
 
 
    const result = await mdToPdf(
@@ -23,8 +26,8 @@ export async function generatePdf(AIres,pdfPath)  {
 
 
         const pdfBuffer = result.content; // Assuming result.content is a Buffer
-
-        return pdfBuffer;
+console.log("pdf buffer generated"+ pdfBuffer);
+        return pdfPath;
     }catch (error) {
         console.log(error);
 
