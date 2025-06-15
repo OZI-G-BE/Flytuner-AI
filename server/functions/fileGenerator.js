@@ -14,19 +14,10 @@ export async function generatePdf(AIres,pdfPath)  {
 
 
 
-   const result = await mdToPdf(
-    {content: AIres},
-        { dest: pdfPath },
-    );    
-      
-        
-         if (!result || !result.content) {
-      throw new Error('md-to-pdf did not return any PDF content');
-    }
+   await mdToPdf({content: AIres},{ dest: pdfPath });    
 
-
-        const pdfBuffer = result.content; // Assuming result.content is a Buffer
-console.log("pdf buffer generated"+ pdfBuffer);
+        console.log('PDF generated at:', pdfPath);
+        console.log('PDF file exists?', fs.existsSync(pdfPath));
         return pdfPath;
     }catch (error) {
         console.log(error);
