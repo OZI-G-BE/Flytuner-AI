@@ -1,3 +1,4 @@
+process.platform = 'linux';
 import say from "say";
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
