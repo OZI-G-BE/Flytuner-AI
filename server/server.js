@@ -213,9 +213,9 @@ if (!fs.existsSync(uploadDir)) {
         
     const outputMp3Name = `${timestamp}outputAudio.mp3`
         
-     pdfPath   = path.join(uploadDir, pdfName);
+     pdfPath   = path.join('Files', pdfName);
       
-       outputMp3Path   = path.join(uploadDir, outputMp3Name);
+       outputMp3Path   = path.join('Files', outputMp3Name);
 
 
         //change it to normal text before entering the audio function
@@ -225,11 +225,20 @@ if (!fs.existsSync(uploadDir)) {
         console.log("passed audio gen")
 
         const fullPdfPath = path.join(process.cwd(), 'Files', pdfName);
-        const pdfBuffer =  readFileSync(fullPdfPath);
+        const fullAudioPath = path.join(process.cwd(), 'Files', outputMp3Name);
+
+        console.log('App working directory is:', process.cwd());
+
+console.log('generatePdf wrote to:', fullPdfPath);
+console.log('file exists?', fs.existsSync(fullPdfPath));
+
+console.log('generateAudio wrote to:', fullAudioPath);
+console.log('file exists?', fs.existsSync(fullAudioPath));
+
+        const pdfBuffer =  fs.readFileSync(fullPdfPath);
         console.log("pdf buffer read")
 
-        const fullAudioPath = path.join(process.cwd(), 'Files', outputMp3Name);
-        const audioBuffer = readFileSync(fullAudioPath);
+        const audioBuffer = fs.readFileSync(fullAudioPath);
         console.log("audio buffer read")
 
         const title = `Summary-${timestamp}`;
