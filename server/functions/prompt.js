@@ -1,8 +1,8 @@
 import { GoogleGenAI, Type  } from "@google/genai";
 import * as fs from 'fs/promises';
-import dotenv from 'dotenv';
 import { File } from 'buffer';
 import path from 'path'
+import dotenv from 'dotenv';
 
 dotenv.config({path: '../environment/.env'});
  //points to my file of environment variables
