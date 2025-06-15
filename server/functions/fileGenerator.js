@@ -11,9 +11,10 @@ export async function generatePdf(AIres,pdfPath)  {
     }
 
 
-   const result = await mdToPdf({content: AIres},
+   const result = await mdToPdf(
+    {content: AIres},
         { dest: pdfPath },
-        {filename: pdfPath}).catch(console.error);    
+    );    
       
         
          if (!result || !result.content) {
