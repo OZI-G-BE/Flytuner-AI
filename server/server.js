@@ -207,9 +207,9 @@ app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
     const in24h = new Date(Date.now() + 24*60*60*1000);
     const timestamp = Date.now();
     
-        pdfName = `${timestamp}outputPDF.pdf`
+    const pdfName = `${timestamp}outputPDF.pdf`
         
-        outputMp3Name = `${timestamp}outputAudio.mp3`
+    const outputMp3Name = `${timestamp}outputAudio.mp3`
         
      pdfPath   = path.join(uploadDir, pdfName);
       
