@@ -46,39 +46,6 @@ const upload = multer({storage:storage})
 app.use(json());
 app.use(static_('public'));
 
- // might be overwritten by update vs / Done button fix that
-
-// let mimeTypesArray = [
-//     	"application/javascript",
-// 	"text/x-python",
-// 	"text/x-java-source",
-//     "text/x-csrc",
-// 	"text/x-c++src",
-// 	"application/typescript",
-//     "image/gif",
-// 	"image/svg+xml",
-// 	"image/bmp",
-// 	"image/tiff",
-// 	"image/vnd.microsoft.icon",
-// 	"audio/ogg",
-// 	"audio/opus",
-// 	"video/webm",
-// 	"video/x-msvideo",
-// 	"video/quicktime",
-// 	"video/x-ms-wmv",
-// 	"video/x-matroska",
-// 	// "text/markdown",
-// 	"text/html",
-// 	"application/xml",
-// 	"text/csv",
-// 	"application/rtf",
-// 	"application/x-yaml",
-// 	"application/json",
-//     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-// "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-// "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-// ];
-
 // DOWNLAODS//
 
 app.get('/api/download/pdf/:id', async (req, res) => {
@@ -160,23 +127,6 @@ console.log(i)
     }
 });
 
-
-
-
-// const docFiles = []
-// const normalFiles = []
-    //   for(let i = 0; i < allFiles.length; i++) {
-    //         if (mimeTypesArray.includes(allFiles[i].mimeType)){
-    //             docFiles.push(allFiles[i])
-    //         }else{
-    //             normalFiles.push(allFiles[i])
-    //             console.log(allFiles[i].mimeType)
-    //         }
-    //     }
-
-
-
-
 app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
     try{
         const wordCount = req.body.size;
@@ -213,9 +163,9 @@ if (!fs.existsSync(uploadDir)) {
         
     const outputMp3Name = `${timestamp}outputAudio.mp3`
         
-     pdfPath   = path.join('Files', pdfName);
+     pdfPath   = path.join(process.cwd(), 'Files', pdfName);
       
-       outputMp3Path   = path.join('Files', outputMp3Name);
+       outputMp3Path   = path.join(process.cwd(), 'Files', outputMp3Name);
 
 
         //change it to normal text before entering the audio function
