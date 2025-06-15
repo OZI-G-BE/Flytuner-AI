@@ -5,6 +5,7 @@ import { extname } from "path";
 import { summarizeGemini,generateQuiz,generateFlashCards } from "./functions/prompt.js";
 import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
+import { readFileSync, unlinkSync } from "fs";
 import dotenv from 'dotenv';
 import {connectDB,FileModel} from "./config/db.js";
 import path from "path";
@@ -142,7 +143,7 @@ app.post('/api/removeFile', async (req, res) => {
         const len = removeFiles.length
         for (let i = 0; i < len; i++) {
 console.log(i)
-            fs.unlinkSync(removeFiles[i].path)
+            unlinkSync(removeFiles[i].path)
             console.log("file removed: ", removeFiles[i])
         }  
         
@@ -224,11 +225,11 @@ if (!fs.existsSync(uploadDir)) {
         console.log("passed audio gen")
 
         const fullPdfPath = path.join(process.cwd(), 'Files', pdfName);
-        const pdfBuffer =  fs.readFileSync(fullPdfPath);
+        const pdfBuffer =  readFileSync(fullPdfPath);
         console.log("pdf buffer read")
 
         const fullAudioPath = path.join(process.cwd(), 'Files', outputMp3Name);
-        const audioBuffer = fs.readFileSync(fullAudioPath);
+        const audioBuffer = readFileSync(fullAudioPath);
         console.log("audio buffer read")
 
         const title = `Summary-${timestamp}`;
@@ -252,8 +253,8 @@ if (!fs.existsSync(uploadDir)) {
 
 await fileDoc.save();
 
-fs.unlinkSync(pdfDownload);
-fs.unlinkSync(outputMp3Path);
+unlinkSync(pdfDownload);
+unlinkSync(outputMp3Path);
 
 
         res.send({summary, issummed:true, id: fileDoc._id});
