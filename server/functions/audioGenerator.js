@@ -18,9 +18,15 @@ export async function downloadAudio(text, mp3Path) {
   });
 
   const { AudioStream } = await polly.send(cmd);
-  // AudioStream is a ReadableStream or Uint8Array depending on runtime
-  // If it's a Uint8Array in Node.js:
-  fs.writeFileSync(mp3Path, AudioStream);
+   const writeStream = fs.createWriteStream(mp3Path);
+
+  // Pipe the TTS stream to the file and wait for it to finish
+  await new Promise((resolve, reject) => {
+    AudioStream.pipe(writeStream)
+      .on("finish", resolve)
+      .on("error", reject);
+  });
+
   return mp3Path;
 }
 
