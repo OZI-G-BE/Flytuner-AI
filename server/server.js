@@ -211,7 +211,7 @@ app.post('/api/summarize', async (req, res) => {
         pdfDownload = await generatePdf(summary,pdfPath);
         audioDownload = await downloadAudio(summary,outputMp3Path); 
         
-        const pdfBuffer =  readFileSync(pdfPath);
+        const pdfBuffer =  readFileSync(pdfDownload);
         const audioBuffer = readFileSync(audioDownload);
 
         const timestamp = Date.now();
