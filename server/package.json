@@ -14,11 +14,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-polly": "^3.828.0",
     "@google-cloud/text-to-speech": "^6.1.0",
     "@google/genai": "^0.7.0",
     "@google/generative-ai": "^0.20.0",
     "@nutrient-sdk/node": "^1.0.0",
-    "aws-sdk": "^2.1692.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",

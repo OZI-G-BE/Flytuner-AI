@@ -177,7 +177,7 @@ console.log(i)
 
 
 
-app.post('/api/summarize', async (req, res) => {
+app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
     try{
         const wordCount = req.body.size;
         const allFiles = req.body.selectedFiles;
@@ -202,11 +202,20 @@ app.post('/api/summarize', async (req, res) => {
     let outputMp3Path
     let pdfPath
     
+ const uploadDir = path.join(process.cwd(), 'Files');
+
     const in24h = new Date(Date.now() + 24*60*60*1000);
-        pdfPath = "public/"+Date.now()+"outputPDF.pdf";
+    const timestamp = Date.now();
+    
+        pdfName = `${timestamp}outputPDF.pdf`
         
-        outputMp3Path = "public/"+Date.now()+"outputAudio.mp3"
+        outputMp3Name = `${timestamp}outputAudio.mp3`
         
+     pdfPath   = path.join(uploadDir, pdfName);
+      
+       outputMp3Path   = path.join(uploadDir, outputMp3Name);
+
+
         //change it to normal text before entering the audio function
         pdfDownload = await generatePdf(summary,pdfPath);
         console.log("passed pdf gen")
@@ -216,8 +225,7 @@ app.post('/api/summarize', async (req, res) => {
         console.log("pdf buffer read")
         const audioBuffer = readFileSync(audioDownload);
         console.log("audio buffer read")
-        
-        const timestamp = Date.now();
+
         const title = `Summary-${timestamp}`;
         
         const fileDoc = new FileModel({

@@ -3,19 +3,23 @@ import dotenv from 'dotenv';
 dotenv.config({path: '../environment/.env'});
  //points to my file of environment variables
 
-import fs from 'fs';
-import AWS from 'aws-sdk';
+import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
+import fs from "fs";
 
 // Configure via env vars: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
-const polly = new AWS.Polly();
+const polly = new PollyClient({ region: process.env.AWS_REGION });
+
 
 export async function downloadAudio(text, mp3Path) {
-  const params = {
+  const cmd = new SynthesizeSpeechCommand({
     Text: text,
-    OutputFormat: 'mp3',
-    VoiceId: 'Joanna', // or other supported voices
-  };
-  const { AudioStream } = await polly.synthesizeSpeech(params).promise();
+    OutputFormat: "mp3",
+    VoiceId: "Joanna",
+  });
+
+  const { AudioStream } = await polly.send(cmd);
+  // AudioStream is a ReadableStream or Uint8Array depending on runtime
+  // If it's a Uint8Array in Node.js:
   fs.writeFileSync(mp3Path, AudioStream);
   return mp3Path;
 }
