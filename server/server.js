@@ -209,11 +209,14 @@ app.post('/api/summarize', async (req, res) => {
         
         //change it to normal text before entering the audio function
         pdfDownload = await generatePdf(summary,pdfPath);
+        console.log("passed pdf gen")
         audioDownload = await downloadAudio(summary,outputMp3Path); 
-        
+        console.log("passed audio gen")
         const pdfBuffer =  readFileSync(pdfDownload);
+        console.log("pdf buffer read")
         const audioBuffer = readFileSync(audioDownload);
-
+        console.log("audio buffer read")
+        
         const timestamp = Date.now();
         const title = `Summary-${timestamp}`;
         
