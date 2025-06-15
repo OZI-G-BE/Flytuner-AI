@@ -1,0 +1,28 @@
+# 1. Use an official Node image with Debian Slim
+FROM node:18-bullseye-slim
+
+# 2. Install required Ubuntu packages
+#    - espeak for text‑to‑speech
+#    - ffmpeg for audio conversion
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      espeak \
+      ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
+
+# 3. Create app directory in container
+WORKDIR /usr/src/app
+
+# 4. Copy package manifests and install dependencies
+COPY package*.json ./
+RUN npm install --production
+
+# 5. Copy all source files
+COPY . .
+
+# 6. Expose the port your Express app listens on
+#    (Render will set PORT in env)
+EXPOSE 8000
+
+# 7. Run the server
+CMD [ "node", "server/server.js" ]
