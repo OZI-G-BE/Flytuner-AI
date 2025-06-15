@@ -42,8 +42,7 @@ const apiBase = import.meta.env.VITE_API_BASE_URL;
     const [isSummary, setIsSummary] = useState(true);
     const [outputSize,setOutputSize] = useState("250");
     const [isSummed, setIsSummed] = useState(false)
-    const pathPDF = useRef('null');
-    const pathAudio = useRef('null');
+    const [docID, setDocID] = useState(null);
     
     //QUIZ
     const [quizReceived, setQuizReceived] = useState([]);
@@ -161,7 +160,7 @@ async function handleFileRemove (){
     
     setIsLoading(true)
       const response = await axios.post(
-          `${apiBase}/api/removeFile`, { selectedFiles: editedFileIDS.current, pdfDownload: pathPDF.current, audioDownload: pathAudio.current} // body (file IDs)
+          `${apiBase}/api/removeFile`, { selectedFiles: editedFileIDS.current, id: docID} // body (file IDs)
         );
         console.log(response.data)
         
@@ -177,6 +176,7 @@ async function handleFileRemove (){
             setSumHolder("No Files to Summarize yet")
             setDataReceived(null)
             setIsSummed(false)
+            setDocID(null)
             
             //Quiz
             setQuizHolder("no file to generate quiz yet")
@@ -216,12 +216,11 @@ async function summeraizeFiles(){
          }
          setIsLoading(true)
         const response = await axios.post(`${apiBase}/api/summarize`,
-            { selectedFiles: editedFileIDS.current, size: outputSize, API_KEY: GGAPIK.current })
+            { selectedFiles: editedFileIDS.current, size: outputSize, API_KEY: GGAPIK.current, id: docID })
         setIsLoading(false)
         setDataReceived(response.data.summary)
         setIsSummed(response.data.issummed)
-        pathAudio.current = response.data.audioDownload
-        pathPDF.current = response.data.pdfDownload
+        setDocID(response.data.id)
         setIsSummary(true)
         setIsQuiz(false)
     return
@@ -656,19 +655,21 @@ value={flashCount}
 
 </div>
 
-   <div className={ `${isSummed ? styles.btncontainer : styles.Inactive}`  }>
+   <div className={ `${isSummary ? styles.btncontainer : styles.Inactive}`  }>
+<div className={`${isLoading ? styles.Inactivesubmit : styles.btncontainer}`}>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/pdf?path=${pathPDF.current}`} download  target="_blank">
+    <a className={`${ dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/download/pdf/${docID}`} download  target="_blank">
        <Button_Small>
         Download pdf
         </Button_Small>
     </a>
 
-    <a className={`${dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/data/download/audio?path=${pathAudio.current}`} download target="_blank">
+    <a className={`${ dataReceived ? styles.smallBtn : styles.Inactive}`} href={`${apiBase}/api/download/audio/${docID}`} download target="_blank">
        <Button_Small>
         Download audio
         </Button_Small>
     </a>
+</div>
 
 
 

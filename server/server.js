@@ -5,13 +5,13 @@ import { extname } from "path";
 import { summarizeGemini,generateQuiz,generateFlashCards } from "./functions/prompt.js";
 import { generatePdf } from "./functions/fileGenerator.js";
 import { downloadAudio } from "./functions/audioGenerator.js";
-import { unlinkSync } from "fs";
+import { readFileSync, unlinkSync } from "fs";
 import dotenv from 'dotenv';
+import {connectDB,FileModel} from "./config/db.js";
 
 
 
 // UNUSED
-// import {connectDB} from "./config/db.js";
 // import { mdToPdf } from 'md-to-pdf'
 // import T from "tesseract.js";
 // import PrompterModel from "./models/Prompter.model.js";
@@ -81,15 +81,30 @@ app.use(static_('public'));
 
 // DOWNLAODS//
 
-app.get('/api/data/download/pdf', async (req, res) => {
-    
-    res.download(req.query.path); // Prompts a download in the frontend
+app.get('/api/download/pdf/:id', async (req, res) => {
+  const file = await FileModel.findById(req.params.id);
+  if (!file) return res.status(404).send("Not found");
+
+  res.set({
+    'Content-Type': file.pdf.contentType,
+    'Content-Disposition': `attachment; filename="${file.pdf.filename}"`,
+  });
+
+  res.send(file.pdf.data);
 });
 
-app.get('/api/data/download/audio', async (req, res) => {
-    
-    res.download(req.query.path); // Prompts a download in the frontend
+app.get('/api/download/audio/:id', async (req, res) => {
+  const file = await FileModel.findById(req.params.id);
+  if (!file) return res.status(404).send("Not found");
+
+  res.set({
+    'Content-Type': file.audio.contentType,
+    'Content-Disposition': `attachment; filename="${file.audio.filename}"`,
+  });
+
+  res.send(file.audio.data);
 });
+
 
 
 
@@ -123,8 +138,7 @@ const dataBuffer = [];
 app.post('/api/removeFile', async (req, res) => {
     try{
        const removeFiles = req.body.selectedFiles;
-       const pdfDownload = req.body.pdfDownload;
-       const audioDownload = req.body.audioDownload;
+        const delMDBFiles = req.body.id;
         // console.log(uploadedFiles.length)
         const len = removeFiles.length
         for (let i = 0; i < len; i++) {
@@ -132,11 +146,14 @@ console.log(i)
             unlinkSync(removeFiles[i].path)
             console.log("file removed: ", removeFiles[i])
         }  
-        if(pdfDownload != 'null' || audioDownload != 'null'){
-            unlinkSync(pdfDownload)
-            unlinkSync(audioDownload)
-        }
-        res.send({removed: true})
+        
+
+ const doc = await FileModel.findByIdAndDelete(delMDBFiles);
+    if (!doc) return res.status(404).json({ message: 'Not found' });
+    
+    
+    // res.json({ message: 'Deleted successfully' });
+    res.send({removed: true})
     }catch (error){
         res.status(500).json({ message: "An error occurred", error: error.message });
         console.log(error)
@@ -175,23 +192,55 @@ app.post('/api/summarize', async (req, res) => {
             summary = await summarizeGemini(wordCount, allFiles, externalKey);
         }
         
-       let pdfPath = "public/"+Date.now()+"outputPDF.pdf";
-       let audioPath = "public/"+Date.now()+"outputPDF.wav"
+        if(req.body.id){
+            const doc = await FileModel.findByIdAndDelete(req.body.id);
+    if (!doc) return res.status(404).json({ message: 'Not found' });
+        }
 
     let pdfDownload 
     let audioDownload
-
-        if (pdfDownload || audioDownload) {
-            unlinkSync(pdfDownload);
-            unlinkSync(audioDownload);}
-         pdfPath = "public/"+Date.now()+"outputPDF.pdf";
-         audioPath = "public/"+Date.now()+"outputAudio.wav"
-
+    let outputMp3Path
+    let pdfPath
+    let audioPath
+    const in24h = new Date(Date.now() + 24*60*60*1000);
+        pdfPath = "public/"+Date.now()+"outputPDF.pdf";
+        audioPath = "public/"+Date.now()+"outputAudio.wav"
+        outputMp3Path = "public/"+Date.now()+"outputAudio.mp3"
+        
         //change it to normal text before entering the audio function
         pdfDownload = await generatePdf(summary,pdfPath);
-        audioDownload = downloadAudio(summary,audioPath); 
+        audioDownload = await downloadAudio(summary,audioPath,outputMp3Path); 
+        
+        const pdfBuffer =  readFileSync(pdfPath);
+        const audioBuffer = readFileSync(audioDownload);
 
-        res.send({summary, issummed:true, pdfDownload, audioDownload});
+        const timestamp = Date.now();
+        const title = `Summary-${timestamp}`;
+        
+        const fileDoc = new FileModel({
+            title,
+            summary,
+            pdf: {
+                data: pdfBuffer,
+                contentType: "application/pdf",
+                filename: `${timestamp}.pdf`
+            },
+    audio: {
+        data: audioBuffer,
+        contentType: "audio/wav",
+        filename: `${timestamp}.mp3`
+    },
+
+    expireAt: in24h,
+});
+
+await fileDoc.save();
+
+unlinkSync(pdfDownload);
+unlinkSync(outputMp3Path);
+
+
+        res.send({summary, issummed:true, id: fileDoc._id});
     }catch (error){
         console.log(error)
         res.status(500).json({ message: "An error occurred", error: error.message });
@@ -280,10 +329,10 @@ app.post('/api/saveApiKey', async (req, res) => {
         res.status(500).json({ message: "An error occurred", error: error.message });
     }})
 
-
-app.listen(PORT, async ()=>{
     
+    app.listen(PORT, async ()=>{
+        
+        await connectDB()
     console.log(`server running on port ${PORT}`)
     console.log(`the allowed origins are: ${allowed}`)
-    // await connectDB()
 })
