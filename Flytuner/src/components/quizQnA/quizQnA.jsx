@@ -2,7 +2,7 @@ import {useRef, useState, useEffect} from "react";
 import styles from "./quizQnA.module.css";
 
 
-export default function QuizQnA({question="test question: what is luffy's last name", ans1= [ "ans1", false ], ans2= ["ans2", false] , ans3= ["ans3", true] ,isCorrect=()=>{}, questIndex})
+export default function QuizQnA({question="test question: what is luffy's last name", ans1= [ "Nully", false ], ans2= ["ans2", false] , ans3= ["ans3", true], ans4 =["ans4", false] ,isCorrect=()=>{}, questIndex})
 
 {
 
@@ -35,7 +35,11 @@ useEffect(()=>{setAnswerPool(Math.floor(Math.random() * 6))
         }
 },[ans1])
 
-const answerBase = [[ans1, ans2, ans3], [ans2, ans1, ans3], [ans3, ans1, ans2],[ans3, ans2, ans1], [ans1, ans3, ans2], [ans2, ans3, ans1]];
+const answerBase = [[ans1, ans2, ans3,ans4], [ans2, ans1, ans3,ans4], [ans3, ans1, ans2,ans4],[ans3, ans2, ans1,ans4], [ans1, ans3, ans2,ans4], [ans2, ans3, ans1,ans4],
+                    [ans1, ans2, ans4, ans3], [ans2, ans1, ans4, ans3], [ans3, ans1,ans4, ans2],[ans3, ans2, ans4, ans1], [ans1, ans3, ans4, ans2], [ans2, ans3, ans4, ans1],
+                    [ans1, ans4, ans2, ans3], [ans2, ans4, ans1, ans3], [ans3, ans4, ans1, ans2],[ans3, ans4, ans2, ans1], [ans1, ans4, ans3, ans2], [ans2, ans4, ans3, ans1],
+                    ,[ans4, ans1, ans2, ans3], [ans4, ans2, ans1, ans3], [ans4, ans3, ans1, ans2],[ans4, ans3, ans2, ans1], [ans4, ans1, ans3, ans2], [ans4, ans2, ans3, ans1]
+                ];
 const answer = answerBase[answerPool];
 
 return(
@@ -47,7 +51,7 @@ return(
 <ul>
     {
         answer.map((ans, index)=>
-<li key= {index} className={styles.option}>
+<li key= {index} className={`${ans[0]!="Nully" ? styles.option : styles.empty}`}>
             <input
                 type="radio"
                 id={ans[0]}

@@ -58,8 +58,8 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
         const content = [
             `generate a quiz on the topics contained in the documents regardless of correlation 
             containing ${questionCount} well thought out questions with a single correct answer 
-            and 2 additional options that are wrong answers, make sure the correct answer is always the 3rd option.
-            add true and false questions if applicable, make the second option blank and make the 3rd option the correct answer and also add a short explanation of the correct answer.
+            and 3 additional options that are wrong answers, make sure the correct answer is always the 3rd option.
+            add true and false questions if applicable, make only two of the options have only the word "Nully" and make the 3rd option the correct answer and also add a short explanation of the correct answer.
             if it is a video or audio uploaded, then generate the quiz based on the contents of the video or audio uploaded.`,
             ...parts
         ]

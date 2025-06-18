@@ -257,7 +257,7 @@ async function generateQuiz(){
         setIsSummary(false)
         setIsQuiz(true)           
            } catch (error) {
-        console.error("Error uploading Files, try again later");
+        console.error("Error Generating quiz, try again later");
         setQuizHolder("Error Generating quiz from Files, try again later")
         setIsLoading(false)
     }
@@ -462,7 +462,7 @@ className={`${isQuiz ? styles.quizArea : styles.Inactive}`}
 
     {quizReceived.map((quiz, index)=>
     <li key={index} className={`${(questArray.current[index] && showAnswers) ? styles.Qlist: ''} ${(!questArray.current[index] && showAnswers) ? styles.QlistWrong:''}`}>
-<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} isCorrect={quizChecker} questIndex ={index}  />
+<QuizQnA question={quiz.questions} ans1 = {quiz.ans[0]} ans2 = {quiz.ans[1]} ans3 = {quiz.ans[2]} ans4 = {quiz.ans[3]} isCorrect={quizChecker} questIndex ={index}  />
 <div className={showAnswers ? styles.explanation:styles.Inactive}>
     {quiz.Explanations}
 </div>

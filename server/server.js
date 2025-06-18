@@ -240,6 +240,7 @@ app.post('/api/generateQuiz', async (req, res) => {
         const quizans1 = [] //array of answer1s
         const quizans2 = []; //array of answer2s
         const quizans3 = []; //array of answer3s [correct answers]
+        const quizans4 = [];
         const ansExplained = []; // array of the answer explanatoins
         const quizObj = [] // redistributed properties of quiz
 
@@ -247,12 +248,13 @@ app.post('/api/generateQuiz', async (req, res) => {
         quizData.push(quiz[i].Question)
         quizans1.push(quiz[i].Options[0])
         quizans2.push(quiz[i].Options[1])
+        quizans4.push(quiz[i].Options[3])
         quizans3.push(quiz[i].Answer)
         ansExplained.push(quiz[i].Explanation)
     }
     for(let i = 0; i< quiz.length;i++){
     quizObj.push({questions: quizData[i],
-        ans: [[quizans1[i],  false],[quizans2[i], false], [quizans3[i], true]],
+        ans: [[quizans1[i],  false],[quizans2[i], false], [quizans3[i], true], [quizans4[i], false]],
         Explanations: ansExplained[i] })
     }  
         console.log(quiz)

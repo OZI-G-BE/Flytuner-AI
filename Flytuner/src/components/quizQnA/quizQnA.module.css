@@ -12,3 +12,7 @@
 
     list-style: none;
 }
+
+.empty{
+    display: none
+}

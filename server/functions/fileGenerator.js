@@ -28,8 +28,9 @@ export function generatePdf(markdown, outputPath) {
     tokens.forEach(token => {
       switch (token.type) {
         case 'heading':
-          const size = 24 - (token.depth - 1) * 4;
-          doc.fontSize(size).text(token.text, { underline: token.depth === 1 });
+          const size = 24 - (token.depth - 1) * 3;
+          doc.fontSize(size).text(token.text);
+          // , { underline: token.depth === 1 }
           doc.moveDown(0.5);
           break;
 
@@ -40,7 +41,7 @@ export function generatePdf(markdown, outputPath) {
 
         case 'list':
           token.items.forEach(item => {
-            doc.fontSize(12).text(`• ${item.text}`, { indent: 20 });
+            doc.fontSize(12).text(`• ${item.text}`, { indent: 15 });
           });
           doc.moveDown();
           break;
