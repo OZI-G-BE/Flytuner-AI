@@ -114,13 +114,13 @@ console.log(i)
             console.log("file removed: ", removeFiles[i])
         }  
         
+        res.send({removed: true})
 
  const doc = await FileModel.findByIdAndDelete(delMDBFiles);
     if (!doc) return res.status(404).json({ message: 'Not found' });
     
     
     // res.json({ message: 'Deleted successfully' });
-    res.send({removed: true})
     }catch (error){
         res.status(500).json({ message: "An error occurred", error: error.message });
         console.log(error)
@@ -182,38 +182,38 @@ console.log('pdf file exists?', fs.existsSync(pdfPath));
 console.log('generateAudio wrote to:', outputMp3Path);
 console.log('audio file exists?', fs.existsSync(outputMp3Path));
 
-        const pdfBuffer =  fs.readFileSync(pdfPath);
-        console.log("pdf buffer read")
+const pdfBuffer =  fs.readFileSync(pdfPath);
+console.log("pdf buffer read")
 
-        const audioBuffer = fs.readFileSync(outputMp3Path);
-        console.log("audio buffer read")
+const audioBuffer = fs.readFileSync(outputMp3Path);
+console.log("audio buffer read")
 
-        const title = `Summary-${timestamp}`;
-        
-        const fileDoc = new FileModel({
-            title,
-            summary,
-            pdf: {
-                data: pdfBuffer,
-                contentType: "application/pdf",
-                filename: `${timestamp}.pdf`
-            },
+const title = `Summary-${timestamp}`;
+
+const fileDoc = new FileModel({
+    title,
+    summary,
+    pdf: {
+        data: pdfBuffer,
+        contentType: "application/pdf",
+        filename: `${timestamp}.pdf`
+    },
     audio: {
         data: audioBuffer,
         contentType: "audio/wav",
         filename: `${timestamp}.mp3`
     },
-
+    
     expireAt: in24h,
 });
 
+res.send({summary, issummed:true, id: fileDoc._id});
 await fileDoc.save();
 
 unlinkSync(pdfDownload);
 unlinkSync(outputMp3Path);
 
 
-        res.send({summary, issummed:true, id: fileDoc._id});
     }catch (error){
         console.log(error)
         res.status(500).json({ message: "An error occurred", error: error.message });
