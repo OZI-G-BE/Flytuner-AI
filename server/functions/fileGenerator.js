@@ -15,22 +15,18 @@ export function generatePdf(markdown, outputPath) {
     // 1) Ensure output directory exists
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
     // 2) Create PDFDocument and write stream
     const doc = new PDFDocument({ margin: 40 });
     const stream = fs.createWriteStream(outputPath);
     doc.pipe(stream);
-
     // 3) Turn markdown into tokens
     const tokens = marked.lexer(markdown);
-
     // 4) Iterate tokens and render
     tokens.forEach(token => {
       switch (token.type) {
         case 'heading':
           const size = 24 - (token.depth - 1) * 3;
           doc.fontSize(size).text(token.text);
-          // , { underline: token.depth === 1 }
           doc.moveDown(0.5);
           break;
 
@@ -40,18 +36,13 @@ export function generatePdf(markdown, outputPath) {
           break;
 
         case 'list':
-          token.items.forEach(item => {
-            doc.fontSize(12).text(`• ${item.text}`, { indent: 15 });
-          });
+          token.items.forEach(item => {doc.fontSize(12).text(`• ${item.text}`, { indent: 15 });});
           doc.moveDown();
           break;
 
         // you can add blockquotes, code blocks, etc.
         default:
-          break;
-      }
-    });
-
+          break;} });
     // 5) Finalize
     doc.end();
     stream.on('finish', () => resolve(outputPath));

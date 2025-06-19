@@ -26,10 +26,7 @@ if (process.env.NODE_ENV !== 'production') {
 const app = express();
 
 const allowed = (process.env.CORS_ORIGIN || '').split(',');
-app.use(cors({
-  origin: allowed,
-  credentials: true,
-}));
+app.use(cors({origin: allowed, credentials: true,}));
 
 const PORT = process.env.PORT || 8000;
 const storage = diskStorage({
@@ -106,21 +103,17 @@ app.post('/api/removeFile', async (req, res) => {
     try{
        const removeFiles = req.body.selectedFiles;
         const delMDBFiles = req.body.id;
-        // console.log(uploadedFiles.length)
         const len = removeFiles.length
         for (let i = 0; i < len; i++) {
-console.log(i)
             unlinkSync(removeFiles[i].path)
             console.log("file removed: ", removeFiles[i])
         }  
         
+        if (delMDBFiles) {
+        await FileModel.findByIdAndDelete(delMDBFiles);
+    }
         res.send({removed: true})
 
- const doc = await FileModel.findByIdAndDelete(delMDBFiles);
-    if (!doc) return res.status(404).json({ message: 'Not found' });
-    
-    
-    // res.json({ message: 'Deleted successfully' });
     }catch (error){
         res.status(500).json({ message: "An error occurred", error: error.message });
         console.log(error)
@@ -133,92 +126,42 @@ app.post('/api/summarize',  upload.array('uploadFile'), async (req, res) => {
         const allFiles = req.body.selectedFiles;
         if (!wordCount || !allFiles) {
             return res.status(400).json({ message: "Missing required parameters." });}
-        
         let summary;
         const externalKey = req.body.API_KEY;
-        if (externalKey === undefined || externalKey === null || externalKey == '') {
-            summary = await summarizeGemini(wordCount, allFiles);
-        }else{
-            summary = await summarizeGemini(wordCount, allFiles, externalKey);
-        }
-        
-        if(req.body.id){
-            const doc = await FileModel.findByIdAndDelete(req.body.id);
-    if (!doc) return res.status(404).json({ message: 'Not found' });
-        }
-
+        if (externalKey === undefined || externalKey === null || externalKey == '') {summary = await summarizeGemini(wordCount, allFiles);}
+        else{ summary = await summarizeGemini(wordCount, allFiles, externalKey); }
+        if(req.body.id){const doc = await FileModel.findByIdAndDelete(req.body.id);
+    if (!doc) return res.status(404).json({ message: 'Not found' });}
     let pdfDownload 
-    let audioDownload
-    // let outputMp3Path
-    // let pdfPath
-    
+    let audioDownload    
  const uploadDir = path.join(process.cwd(), 'Files');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+if (!fs.existsSync(uploadDir)) {fs.mkdirSync(uploadDir, { recursive: true });}
     const in24h = new Date(Date.now() + 24*60*60*1000);
     const timestamp = Date.now();
-    
     const pdfName = `${timestamp}outputPDF.pdf`
-        
     const outputMp3Name = `${timestamp}outputAudio.mp3`
-        
     let pdfPath = path.join(process.cwd(), 'Files', pdfName);
-      
     let   outputMp3Path   = path.join(process.cwd(), 'Files', outputMp3Name);
-
         //change it to normal text before entering the audio function
-        pdfDownload = await generatePdf(summary,pdfPath);
-        console.log("passed pdf gen")
-        audioDownload = await downloadAudio(summary,outputMp3Path); 
-        console.log("passed audio gen")
-
-
-        console.log('App working directory is:', process.cwd());
-
-console.log('generatePdf wrote to:', pdfPath);
-console.log('pdf file exists?', fs.existsSync(pdfPath));
-
-console.log('generateAudio wrote to:', outputMp3Path);
-console.log('audio file exists?', fs.existsSync(outputMp3Path));
-
+    pdfDownload = await generatePdf(summary,pdfPath);
+    audioDownload = await downloadAudio(summary,outputMp3Path); 
 const pdfBuffer =  fs.readFileSync(pdfPath);
 console.log("pdf buffer read")
-
 const audioBuffer = fs.readFileSync(outputMp3Path);
 console.log("audio buffer read")
-
 const title = `Summary-${timestamp}`;
-
 const fileDoc = new FileModel({
-    title,
-    summary,
-    pdf: {
-        data: pdfBuffer,
-        contentType: "application/pdf",
-        filename: `${timestamp}.pdf`
-    },
-    audio: {
-        data: audioBuffer,
-        contentType: "audio/wav",
-        filename: `${timestamp}.mp3`
-    },
-    
-    expireAt: in24h,
-});
-
+    title,summary, pdf: {data: pdfBuffer, contentType: "application/pdf",filename: `${timestamp}.pdf`},
+    audio: {data: audioBuffer,contentType: "audio/wav",filename: `${timestamp}.mp3`},    
+    expireAt: in24h,});
 res.send({summary, issummed:true, id: fileDoc._id});
 await fileDoc.save();
-
 unlinkSync(pdfDownload);
-unlinkSync(outputMp3Path);
+unlinkSync(outputMp3Path);}catch (error){console.log(error)
+        res.status(500).json({ message: "An error occurred", error: error.message });}});
 
 
-    }catch (error){
-        console.log(error)
-        res.status(500).json({ message: "An error occurred", error: error.message });
-    }
-});
+
 
 app.post('/api/generateQuiz', async (req, res) => {
     try{
@@ -231,11 +174,7 @@ app.post('/api/generateQuiz', async (req, res) => {
             const externalKey = req.body.API_KEY;
         if (externalKey === undefined || externalKey === null || externalKey == '') {
             quiz = await generateQuiz(questionCount, files);
-        }else{
-            quiz = await generateQuiz(questionCount, files, externalKey);
-        }
-        
-        
+        }else{quiz = await generateQuiz(questionCount, files, externalKey);}
         const quizData = [] //array of questions
         const quizans1 = [] //array of answer1s
         const quizans2 = []; //array of answer2s
@@ -261,9 +200,7 @@ app.post('/api/generateQuiz', async (req, res) => {
         res.send({quizObj})
     }catch (error){
         console.log(error)
-        res.status(500).json({ message: "An error occurred", error: error.message});
-    }
-})
+        res.status(500).json({ message: "An error occurred", error: error.message});}})
 
 
 app.post('/api/generateFlashCards', async(req,res)=>{

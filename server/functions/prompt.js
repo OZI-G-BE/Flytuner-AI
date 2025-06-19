@@ -22,7 +22,7 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
     }));
     
     const content = [
-        `explain all of the topics contained in the documents regardless of correlation and 
+        `explain all of the topics contained in the documents regardless of correlation but try to find a correlation if possible and 
         if it is a video or audio uploaded, 
         summerize the contents in ${wordCount} words
         if it is a story then give an overview in  ${wordCount} words 
@@ -59,7 +59,8 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
             `generate a quiz on the topics contained in the documents regardless of correlation 
             containing ${questionCount} well thought out questions with a single correct answer 
             and 3 additional options that are wrong answers, make sure the correct answer is always the 3rd option.
-            add true and false questions if applicable, make only two of the options have only the word "Nully" and make the 3rd option the correct answer and also add a short explanation of the correct answer.
+            add true and false questions if applicable, make only two of the options have only the word "Nully" and
+            make the 3rd option the correct answer and also add a short explanation of the correct answer.
             if it is a video or audio uploaded, then generate the quiz based on the contents of the video or audio uploaded.`,
             ...parts
         ]
@@ -73,24 +74,15 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
                     items: {
                         type: Type.OBJECT,
                         properties: {
-                            'Question': {type: Type.STRING,
-                                    description: 'a Question generated from the contents of the uploaded files for the quiz',
-                                    nullable: false,},
-                            'Answer': {type: Type.STRING,
-                                    description: 'the answer to the question',
-                                    nullable: false,},
-                            'Options': {
-                                type: Type.ARRAY,
-                                items: {type: Type.STRING,
-                                        description: 'the wrong options for the quiz question',
-                                        nullable: false,},
-                            },
-                            'Explanation':{type: Type.STRING,
-                                        description:"An explanation of the correct answer",
-                                        nullable: false}
-                        },required: ['Question', 'Answer', 'Options'],
-                    },},},});
+                            'Question': {type: Type.STRING, description: 'a Question generated from the contents of the uploaded files for the quiz', nullable: false,},
+                            'Answer': {type: Type.STRING,description: 'the answer to the question',nullable: false,},
+                            'Options': {type: Type.ARRAY,items: {type: Type.STRING, description: 'the wrong options for the quiz question', nullable: false,},},
+                            'Explanation':{type: Type.STRING, description:"An explanation of the correct answer", nullable: false}
+                        },required: ['Question', 'Answer', 'Options'],},},},});
         return JSON.parse(result.text)}
+
+
+
     
     export async function generateFlashCards(cardCount,files, API_KEY = process.env.API_KEY){
         const aiT = new GoogleGenAI({ apiKey: API_KEY});
