@@ -154,8 +154,8 @@ const fileDoc = new FileModel({
     title,summary, pdf: {data: pdfBuffer, contentType: "application/pdf",filename: `${timestamp}.pdf`},
     audio: {data: audioBuffer,contentType: "audio/wav",filename: `${timestamp}.mp3`},    
     expireAt: in24h,});
+    await fileDoc.save();
 res.send({summary, issummed:true, id: fileDoc._id});
-await fileDoc.save();
 unlinkSync(pdfDownload);
 unlinkSync(outputMp3Path);}catch (error){console.log(error)
         res.status(500).json({ message: "An error occurred", error: error.message });}});
