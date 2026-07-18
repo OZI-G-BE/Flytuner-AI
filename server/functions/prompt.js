@@ -1,5 +1,8 @@
 // import OpenAI from "openai";
-const {OpenAI} = require("openai")//
+// const {OpenAI} = require("openai")
+
+// FOR A LATER AI MODEL UPGRADE
+
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config({path: "../environment/.env"});
 
