@@ -38,7 +38,7 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
     ]
     
     const result = await aiT.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-3.5-flash",
         contents: content});
         console.log(result.text)
         return result.text
@@ -66,7 +66,7 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
             ...parts
         ]
         const result = await aiT.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-3.5-flash",
             contents: content,
             config: {
                 responseMimeType: 'application/json',
@@ -101,7 +101,7 @@ export async function summarizeGemini(wordCount, normalFiles, API_KEY = process.
                 ...parts
             ]
             const result = await aiT.models.generateContent({
-                model: "gemini-2.0-flash",
+                model: "gemini-3.5-flash",
                 contents: content,
                 config: {
                     responseMimeType: 'application/json',
