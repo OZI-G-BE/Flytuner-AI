@@ -1,0 +1,18 @@
+/* .option label{
+    border: solid;
+    border-radius: 15px;
+    padding-right: 25%;
+    padding-left: 2.5%;
+     position: relative; 
+} */
+
+.option{
+    border: solid;
+    border-radius: 15px;
+
+    list-style: none;
+}
+
+.empty{
+    display: none
+}
